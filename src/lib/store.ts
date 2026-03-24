@@ -25,9 +25,9 @@ export function createCampaign(data: CampaignFormData): Campaign {
   const campaign: Campaign = {
     id: generateId(),
     name: data.name,
-    targetAudience: data.targetAudience,
-    coreProblem: data.coreProblem,
-    applauseSolutions: data.applauseSolutions,
+    vertical: data.vertical,
+    accountNames: data.accountNames,
+    accountsCsv: data.accountsCsv,
     createdAt: new Date().toISOString(),
     currentStage: "research",
     stages: {

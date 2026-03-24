@@ -95,7 +95,7 @@ export default function Dashboard() {
                         {campaign.name}
                       </h3>
                       <p className="text-[0.75rem] text-on-surface-variant">
-                        {campaign.targetAudience}
+                        {campaign.vertical}
                       </p>
                     </div>
                   </div>

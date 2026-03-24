@@ -18,9 +18,9 @@ export type Priority = "high" | "medium" | "low";
 export interface Campaign {
   id: string;
   name: string;
-  targetAudience: string;
-  coreProblem: string;
-  applauseSolutions: string;
+  vertical: string;
+  accountNames: string;
+  accountsCsv: string | null;
   createdAt: string;
   currentStage: StageSlug;
   stages: Record<StageSlug, StageStatus>;
@@ -93,7 +93,7 @@ export interface CampaignOutput {
 
 export interface CampaignFormData {
   name: string;
-  targetAudience: string;
-  coreProblem: string;
-  applauseSolutions: string;
+  vertical: string;
+  accountNames: string;
+  accountsCsv: string | null;
 }

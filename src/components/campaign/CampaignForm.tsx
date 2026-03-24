@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createCampaign } from "@/lib/store";
 
-const audienceOptions = [
+const verticalOptions = [
   "FinTech / Digital Banking",
   "Healthcare / HealthTech",
   "eCommerce / Retail",
@@ -48,21 +48,34 @@ const howItWorks = [
 
 export default function CampaignForm() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
-  const [targetAudience, setTargetAudience] = useState("");
-  const [coreProblem, setCoreProblem] = useState("");
-  const [applauseSolutions, setApplauseSolutions] = useState("");
+  const [vertical, setVertical] = useState("");
+  const [accountNames, setAccountNames] = useState("");
+  const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [csvData, setCsvData] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  function handleCsvUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCsvFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      setCsvData(evt.target?.result as string);
+    };
+    reader.readAsText(file);
+  }
+
   function handleSubmit(draft: boolean) {
-    if (!name.trim() || !targetAudience || !coreProblem.trim()) return;
+    if (!name.trim() || !vertical) return;
 
     setSaving(true);
     const campaign = createCampaign({
       name: name.trim(),
-      targetAudience,
-      coreProblem: coreProblem.trim(),
-      applauseSolutions: applauseSolutions.trim(),
+      vertical,
+      accountNames: accountNames.trim(),
+      accountsCsv: csvData,
     });
 
     if (draft) {
@@ -72,7 +85,7 @@ export default function CampaignForm() {
     }
   }
 
-  const isValid = name.trim() && targetAudience && coreProblem.trim();
+  const isValid = name.trim() && vertical;
 
   return (
     <div className="grid grid-cols-3 gap-8">
@@ -83,7 +96,7 @@ export default function CampaignForm() {
             New Campaign
           </h1>
           <p className="text-on-surface-variant text-sm mt-1">
-            Define your target audience and pain points to start the prospecting pipeline.
+            Define your target accounts and vertical to start the prospecting pipeline.
           </p>
         </div>
 
@@ -102,18 +115,18 @@ export default function CampaignForm() {
             />
           </div>
 
-          {/* Target audience */}
+          {/* Vertical / Industry */}
           <div className="space-y-2">
             <label className="text-[0.75rem] font-medium tracking-[0.05em] uppercase text-on-surface-variant">
-              Target B2B Audience
+              Vertical / Industry
             </label>
             <select
-              value={targetAudience}
-              onChange={(e) => setTargetAudience(e.target.value)}
+              value={vertical}
+              onChange={(e) => setVertical(e.target.value)}
               className="w-full px-4 py-3 bg-surface-container rounded-lg text-sm text-on-surface outline-none transition-colors focus:bg-surface-container-lowest focus:shadow-[0_2px_0_0_#00579f_inset] appearance-none cursor-pointer"
             >
               <option value="">Select a vertical...</option>
-              {audienceOptions.map((opt) => (
+              {verticalOptions.map((opt) => (
                 <option key={opt} value={opt}>
                   {opt}
                 </option>
@@ -121,35 +134,70 @@ export default function CampaignForm() {
             </select>
           </div>
 
-          {/* Core problem */}
+          {/* Account Names */}
           <div className="space-y-2">
             <label className="text-[0.75rem] font-medium tracking-[0.05em] uppercase text-on-surface-variant">
-              Core Business Problem
+              Account Names
             </label>
             <textarea
-              value={coreProblem}
-              onChange={(e) => setCoreProblem(e.target.value)}
-              placeholder="What pain is this audience experiencing that Applause can solve? Be specific about the business impact."
-              rows={4}
+              value={accountNames}
+              onChange={(e) => setAccountNames(e.target.value)}
+              placeholder="Enter company names, one per line. e.g.,&#10;Stripe&#10;Plaid&#10;Brex&#10;Marqeta"
+              rows={5}
               className="w-full px-4 py-3 bg-surface-container rounded-lg text-sm text-on-surface placeholder:text-outline outline-none transition-colors focus:bg-surface-container-lowest focus:shadow-[0_2px_0_0_#00579f_inset] resize-none"
             />
           </div>
 
-          {/* Applause solutions */}
+          {/* Upload CSV */}
           <div className="space-y-2">
             <label className="text-[0.75rem] font-medium tracking-[0.05em] uppercase text-on-surface-variant">
-              Applause Solutions
-              <span className="normal-case tracking-normal text-outline ml-2">
-                (optional)
-              </span>
+              Or Upload Account List
             </label>
-            <textarea
-              value={applauseSolutions}
-              onChange={(e) => setApplauseSolutions(e.target.value)}
-              placeholder="Which Applause capabilities are most relevant? e.g., Payment testing, Localization testing, Real-world device testing"
-              rows={3}
-              className="w-full px-4 py-3 bg-surface-container rounded-lg text-sm text-on-surface placeholder:text-outline outline-none transition-colors focus:bg-surface-container-lowest focus:shadow-[0_2px_0_0_#00579f_inset] resize-none"
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              onChange={handleCsvUpload}
+              className="hidden"
             />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-4 py-3 w-full rounded-lg text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors text-left"
+              style={{ border: "1px dashed rgba(193, 198, 211, 0.4)" }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                upload_file
+              </span>
+              {csvFileName ? csvFileName : "Upload CSV with account names"}
+            </button>
+          </div>
+
+          {/* Share list buttons */}
+          <div className="space-y-2">
+            <label className="text-[0.75rem] font-medium tracking-[0.05em] uppercase text-on-surface-variant">
+              Or Share from Platform
+            </label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-primary bg-surface-container-highest hover:bg-surface-container-high transition-colors"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                  share
+                </span>
+                Share Sales Navigator List
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-primary bg-surface-container-highest hover:bg-surface-container-high transition-colors"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                  share
+                </span>
+                Share ZoomInfo List
+              </button>
+            </div>
           </div>
 
           {/* Actions */}

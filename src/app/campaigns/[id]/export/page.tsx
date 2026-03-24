@@ -77,8 +77,10 @@ export default function ExportPage() {
       lines.push(`APPLAUSE OUTBOUND ENGINE - CAMPAIGN EXPORT`);
       lines.push(`==========================================`);
       lines.push(`Campaign: ${campaign?.name}`);
-      lines.push(`Target Audience: ${campaign?.targetAudience}`);
-      lines.push(`Core Problem: ${campaign?.coreProblem}`);
+      lines.push(`Vertical: ${campaign?.vertical}`);
+      if (campaign?.accountNames) {
+        lines.push(`Accounts: ${campaign.accountNames}`);
+      }
       lines.push(`Generated: ${new Date().toLocaleDateString()}`);
       lines.push(``);
 
