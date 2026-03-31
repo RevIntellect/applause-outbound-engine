@@ -156,115 +156,124 @@ export default function Dashboard() {
           </span>
         </div>
 
-        <div className="space-y-3">
+        {/* Horizontal stage cards */}
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
           {pipelineStages.map((stage) => {
-            const isExpanded = expandedStage === stage.number;
+            const isSelected = expandedStage === stage.number;
 
             return (
-              <div
+              <button
                 key={stage.number}
-                className="bg-surface-container-lowest rounded-xl shadow-ghost overflow-hidden transition-shadow hover:shadow-lift"
+                type="button"
+                onClick={() =>
+                  setExpandedStage(isSelected ? null : stage.number)
+                }
+                className={`flex-shrink-0 w-[168px] rounded-xl shadow-ghost overflow-hidden transition-all hover:shadow-lift text-left p-4 ${
+                  isSelected
+                    ? "ring-2 scale-[1.03]"
+                    : "bg-surface-container-lowest"
+                }`}
+                style={
+                  isSelected
+                    ? { ringColor: stage.color, borderColor: stage.color, outline: `2px solid ${stage.color}`, background: `${stage.color}08` }
+                    : {}
+                }
               >
-                {/* Stage header - clickable */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    setExpandedStage(isExpanded ? null : stage.number)
-                  }
-                  className="w-full flex items-center gap-4 p-5 text-left"
+                {/* Number badge */}
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm mb-3"
+                  style={{ backgroundColor: stage.color }}
                 >
-                  {/* Stage number badge */}
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-sm"
-                    style={{ backgroundColor: stage.color }}
-                  >
-                    {stage.number}
-                  </div>
+                  {stage.number}
+                </div>
 
-                  {/* Icon + Title */}
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ fontSize: 22, color: stage.color }}
-                    >
-                      {stage.icon}
-                    </span>
-                    <div>
-                      <h3 className="text-sm font-semibold text-on-surface">
-                        {stage.title}
-                      </h3>
-                      <p className="text-[0.75rem] text-on-surface-variant">
-                        {stage.subtitle}
-                      </p>
-                    </div>
-                  </div>
+                {/* Icon */}
+                <span
+                  className="material-symbols-outlined mb-2"
+                  style={{ fontSize: 22, color: stage.color }}
+                >
+                  {stage.icon}
+                </span>
 
-                  {/* Expand arrow */}
-                  <span
-                    className="material-symbols-outlined text-outline transition-transform"
-                    style={{
-                      fontSize: 20,
-                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                    }}
-                  >
-                    expand_more
-                  </span>
-                </button>
-
-                {/* Expanded detail */}
-                {isExpanded && (
-                  <div className="px-5 pb-5 pt-0 border-t border-outline-variant/20">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                      {/* What it does */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
-                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                            auto_awesome
-                          </span>
-                          What it does
-                        </div>
-                        <p className="text-sm text-on-surface leading-relaxed">
-                          {stage.description}
-                        </p>
-                      </div>
-
-                      {/* Rep experience */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
-                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                            person
-                          </span>
-                          Rep experience
-                        </div>
-                        <p className="text-sm text-on-surface leading-relaxed">
-                          {stage.repExperience}
-                        </p>
-                      </div>
-
-                      {/* Output */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
-                          <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                            output
-                          </span>
-                          Output
-                        </div>
-                        <p className="text-sm text-on-surface leading-relaxed">
-                          {stage.output}
-                        </p>
-                        {stage.futureNote && (
-                          <p className="text-xs text-outline italic mt-2">
-                            {stage.futureNote}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+                {/* Title + subtitle */}
+                <h3 className="text-[0.8125rem] font-semibold text-on-surface leading-snug">
+                  {stage.title}
+                </h3>
+                <p className="text-[0.6875rem] text-on-surface-variant mt-1 leading-relaxed">
+                  {stage.subtitle}
+                </p>
+              </button>
             );
           })}
         </div>
+
+        {/* Expanded detail panel (below the row) */}
+        {expandedStage !== null && (() => {
+          const stage = pipelineStages.find((s) => s.number === expandedStage);
+          if (!stage) return null;
+
+          return (
+            <div
+              className="mt-4 bg-surface-container-lowest rounded-xl shadow-ghost p-5 border-l-4"
+              style={{ borderLeftColor: stage.color }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
+                  style={{ backgroundColor: stage.color }}
+                >
+                  {stage.number}
+                </div>
+                <h3 className="text-base font-semibold text-on-surface">
+                  {stage.title}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      auto_awesome
+                    </span>
+                    What it does
+                  </div>
+                  <p className="text-sm text-on-surface leading-relaxed">
+                    {stage.description}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      person
+                    </span>
+                    Rep experience
+                  </div>
+                  <p className="text-sm text-on-surface leading-relaxed">
+                    {stage.repExperience}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      output
+                    </span>
+                    Output
+                  </div>
+                  <p className="text-sm text-on-surface leading-relaxed">
+                    {stage.output}
+                  </p>
+                  {stage.futureNote && (
+                    <p className="text-xs text-outline italic mt-2">
+                      {stage.futureNote}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </section>
 
       {/* What Reps Receive */}
