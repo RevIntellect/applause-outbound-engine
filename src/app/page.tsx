@@ -175,7 +175,7 @@ export default function Dashboard() {
                 }`}
                 style={
                   isSelected
-                    ? { ringColor: stage.color, borderColor: stage.color, outline: `2px solid ${stage.color}`, background: `${stage.color}08` }
+                    ? { borderColor: stage.color, outline: `2px solid ${stage.color}`, background: `${stage.color}08` }
                     : {}
                 }
               >
