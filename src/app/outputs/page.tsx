@@ -42,7 +42,7 @@ const outputDocs: OutputDoc[] = [
     contacts: 4,
     cadences: 4,
     touches: 36,
-    embedUrl: null,
+    embedUrl: "https://docs.google.com/document/d/1mBuf4ay4APAqg94hT-GvLFXIMBnJ55yhsayJPmqctBs/preview",
   },
   {
     id: "jasper",
@@ -55,7 +55,7 @@ const outputDocs: OutputDoc[] = [
     contacts: 4,
     cadences: 4,
     touches: 28,
-    embedUrl: null,
+    embedUrl: "https://docs.google.com/document/d/1putmi1s5OM47uLFNzILXotsQ5_e26lAMx85F228dw94/preview",
   },
   {
     id: "ssi",
