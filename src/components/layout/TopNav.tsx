@@ -39,7 +39,7 @@ export default function TopNav() {
           ))
         ) : (
           <div className="text-on-surface font-semibold text-sm">
-            Dashboard
+            Walkthrough
           </div>
         )}
       </div>
