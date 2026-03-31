@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const navItems = [
-  { label: "Campaigns", icon: "campaign", href: "/campaigns" },
   { label: "Dashboard", icon: "dashboard", href: "/" },
-  { label: "Leads", icon: "people", href: "/leads" },
+  { label: "Skills", icon: "psychology", href: "/skills" },
+  { label: "Outputs", icon: "description", href: "/outputs" },
   { label: "Analytics", icon: "analytics", href: "/analytics" },
 ];
 
@@ -17,6 +18,21 @@ const bottomItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("applause-theme") as "light" | "dark" | null;
+    const initial = stored || "light";
+    setTheme(initial);
+    document.documentElement.setAttribute("data-theme", initial);
+  }, []);
+
+  function toggleTheme() {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("applause-theme", next);
+  }
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -90,6 +106,18 @@ export default function Sidebar() {
             {item.label}
           </Link>
         ))}
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-inverse-on-surface/60 hover:text-inverse-on-surface hover:bg-inverse-on-surface/5 transition-colors w-full"
+          aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+            {theme === "light" ? "dark_mode" : "light_mode"}
+          </span>
+          {theme === "light" ? "Dark Mode" : "Light Mode"}
+        </button>
 
         {/* User avatar */}
         <div className="flex items-center gap-3 px-4 py-3 mt-2">
