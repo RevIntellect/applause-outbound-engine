@@ -4,63 +4,69 @@ import { useEffect, useState } from "react";
 import { getCampaigns } from "@/lib/store";
 import type { Campaign } from "@/lib/types";
 
-/* ── Sample data for walkthrough (used when no live campaigns exist) ── */
+/* ── Pipeline data: 5 reps, 3 accounts each (15 accounts total) ── */
 
 const sampleMetrics = {
-  repsSubmitted: 12,
-  totalAccounts: 247,
-  totalContacts: 1_083,
-  intentTopics: 34,
-  avgLeadScore: 72,
-  enrichedLeads: 891,
-  sequencesGenerated: 18,
-  touchpointsCreated: 196,
+  repsSubmitted: 5,
+  totalAccounts: 15,
+  totalContacts: 48,
+  intentTopics: 12,
+  avgLeadScore: 78,
+  enrichedLeads: 42,
+  sequencesGenerated: 12,
+  touchpointsCreated: 102,
 };
 
+const repBreakdown = [
+  { rep: "Rep 1", accounts: ["Harness", "Glean", "Jasper.ai"], contacts: 12, touches: 38, status: "Complete" },
+  { rep: "Rep 2", accounts: ["Datadog", "LaunchDarkly", "Split.io"], contacts: 10, touches: 22, status: "Complete" },
+  { rep: "Rep 3", accounts: ["Workato", "Tray.io", "Celigo"], contacts: 9, touches: 18, status: "In Progress" },
+  { rep: "Rep 4", accounts: ["Figma", "Canva", "Miro"], contacts: 9, touches: 14, status: "In Progress" },
+  { rep: "Rep 5", accounts: ["Notion", "Coda", "Airtable"], contacts: 8, touches: 10, status: "Stage 2" },
+];
+
 const roleDistribution = [
-  { role: "Economic Buyer", count: 186, pct: 17, color: "#7c6bc4" },
-  { role: "Technical Buyer", count: 312, pct: 29, color: "#4a90d9" },
-  { role: "Champion", count: 347, pct: 32, color: "#2db87e" },
-  { role: "Influencer", count: 238, pct: 22, color: "#d4843e" },
+  { role: "Economic Buyer", count: 10, pct: 21, color: "#7c6bc4" },
+  { role: "Technical Buyer", count: 16, pct: 33, color: "#4a90d9" },
+  { role: "Champion", count: 12, pct: 25, color: "#2db87e" },
+  { role: "Influencer", count: 10, pct: 21, color: "#d4843e" },
 ];
 
 const scoringBuckets = [
-  { range: "90-100", count: 98, label: "Top tier" },
-  { range: "80-89", count: 184, label: "Strong" },
-  { range: "70-79", count: 276, label: "Qualified" },
-  { range: "60-69", count: 312, label: "Developing" },
-  { range: "50-59", count: 143, label: "Low signal" },
-  { range: "< 50", count: 70, label: "Unqualified" },
+  { range: "90-100", count: 4, label: "Top tier" },
+  { range: "80-89", count: 12, label: "Strong" },
+  { range: "70-79", count: 14, label: "Qualified" },
+  { range: "60-69", count: 10, label: "Developing" },
+  { range: "50-59", count: 6, label: "Low signal" },
+  { range: "< 50", count: 2, label: "Unqualified" },
 ];
 
 const intentTopics = [
-  { topic: "Mobile App Quality", accounts: 42, intensity: 94 },
-  { topic: "QA Automation Gaps", accounts: 38, intensity: 89 },
-  { topic: "Device Fragmentation", accounts: 35, intensity: 86 },
-  { topic: "Release Velocity", accounts: 31, intensity: 82 },
-  { topic: "Accessibility Compliance", accounts: 28, intensity: 78 },
-  { topic: "Localization Testing", accounts: 24, intensity: 73 },
-  { topic: "Payment Flow Failures", accounts: 21, intensity: 69 },
-  { topic: "Cross-Browser Issues", accounts: 18, intensity: 64 },
+  { topic: "Cross-Browser/Device Testing", accounts: 11, intensity: 94 },
+  { topic: "Enterprise Environment Gaps", accounts: 9, intensity: 91 },
+  { topic: "Connector/Integration QA", accounts: 8, intensity: 87 },
+  { topic: "AI Agent Validation", accounts: 7, intensity: 84 },
+  { topic: "Release Velocity vs QA Coverage", accounts: 6, intensity: 80 },
+  { topic: "POC/Demo Reliability", accounts: 5, intensity: 76 },
+  { topic: "Permission/Security Testing", accounts: 5, intensity: 73 },
+  { topic: "Global Deployment Quality", accounts: 4, intensity: 68 },
 ];
 
 const accountHeatmap = [
-  { vertical: "FinTech", high: 14, med: 22, low: 8 },
-  { vertical: "HealthTech", high: 11, med: 18, low: 12 },
-  { vertical: "E-Commerce", high: 18, med: 15, low: 6 },
-  { vertical: "Media/Streaming", high: 9, med: 20, low: 14 },
-  { vertical: "Travel/Hospitality", high: 7, med: 12, low: 9 },
-  { vertical: "Insurance", high: 12, med: 16, low: 11 },
-  { vertical: "SaaS/B2B", high: 16, med: 14, low: 5 },
-  { vertical: "Retail", high: 8, med: 10, low: 7 },
+  { vertical: "DevOps/Platform", high: 2, med: 1, low: 0 },
+  { vertical: "AI/Enterprise Search", high: 1, med: 1, low: 1 },
+  { vertical: "Marketing Tech", high: 1, med: 1, low: 1 },
+  { vertical: "Integration/iPaaS", high: 1, med: 1, low: 1 },
+  { vertical: "Design/Collaboration", high: 1, med: 1, low: 1 },
+  { vertical: "Productivity/No-Code", high: 0, med: 2, low: 1 },
 ];
 
 const stageConversion = [
-  { stage: "Discovery", entered: 247, passed: 218, rate: 88 },
-  { stage: "ICP Builder", entered: 218, passed: 194, rate: 89 },
-  { stage: "Lead Research", entered: 194, passed: 171, rate: 88 },
-  { stage: "Campaign", entered: 171, passed: 158, rate: 92 },
-  { stage: "Export", entered: 158, passed: 158, rate: 100 },
+  { stage: "Discovery", entered: 15, passed: 13, rate: 87 },
+  { stage: "ICP Builder", entered: 13, passed: 12, rate: 92 },
+  { stage: "Lead Research", entered: 12, passed: 12, rate: 100 },
+  { stage: "Campaign", entered: 12, passed: 10, rate: 83 },
+  { stage: "Export", entered: 10, passed: 10, rate: 100 },
 ];
 
 /* ── Stat card ── */
@@ -155,12 +161,7 @@ export default function AnalyticsPage() {
           Pipeline Analytics
         </h1>
         <p className="text-on-surface-variant text-sm mt-1">
-          Aggregate metrics across all pipeline executions.
-          {liveCampaignCount === 0 && (
-            <span className="ml-1 text-outline italic">
-              Showing sample walkthrough data.
-            </span>
-          )}
+          5 reps, 15 accounts across 6 verticals. 48 contacts scored and sequenced.
         </p>
       </div>
 
@@ -187,6 +188,57 @@ export default function AnalyticsPage() {
         <StatCard icon="verified" label="Enriched Leads" value={m.enrichedLeads} />
         <StatCard icon="route" label="Sequences" value={m.sequencesGenerated} />
         <StatCard icon="touch_app" label="Touchpoints" value={m.touchpointsCreated} />
+      </div>
+
+      {/* Rep Breakdown */}
+      <div className="bg-surface-container-lowest rounded-xl p-5 shadow-ghost">
+        <h2 className="text-sm font-semibold text-on-surface mb-4 flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary" style={{ fontSize: 18 }}>
+            group
+          </span>
+          Rep Breakdown
+        </h2>
+
+        {/* Header */}
+        <div className="grid grid-cols-[100px_1fr_70px_70px_90px] gap-2 mb-2 px-1">
+          {["Rep", "Accounts", "Contacts", "Touches", "Status"].map((h) => (
+            <span key={h} className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+              {h}
+            </span>
+          ))}
+        </div>
+
+        <div className="space-y-1">
+          {repBreakdown.map((r) => (
+            <div
+              key={r.rep}
+              className="grid grid-cols-[100px_1fr_70px_70px_90px] gap-2 items-center px-1 py-2 rounded-lg hover:bg-surface-container-low transition-colors"
+            >
+              <span className="text-sm text-on-surface font-medium">{r.rep}</span>
+              <div className="flex flex-wrap gap-1.5">
+                {r.accounts.map((a) => (
+                  <span
+                    key={a}
+                    className="text-[0.6875rem] px-2 py-0.5 rounded-md bg-surface-container text-on-surface-variant"
+                  >
+                    {a}
+                  </span>
+                ))}
+              </div>
+              <span className="text-sm text-on-surface text-center">{r.contacts}</span>
+              <span className="text-sm text-on-surface text-center">{r.touches}</span>
+              <span
+                className="text-[0.6875rem] font-semibold px-2 py-0.5 rounded text-center"
+                style={{
+                  backgroundColor: r.status === "Complete" ? "#2db87e20" : r.status === "In Progress" ? "#d4843e20" : "#4a90d920",
+                  color: r.status === "Complete" ? "#1a7a4e" : r.status === "In Progress" ? "#a0632a" : "#2d6ab9",
+                }}
+              >
+                {r.status}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Two-column: Scoring Matrix + Persona Distribution */}
