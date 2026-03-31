@@ -9,6 +9,7 @@ const navItems = [
   { label: "Skills", icon: "psychology", href: "/skills" },
   { label: "Outputs", icon: "description", href: "/outputs" },
   { label: "Analytics", icon: "analytics", href: "/analytics" },
+  { label: "Avatar", icon: "smart_toy", href: "/avatar" },
 ];
 
 const bottomItems = [
