@@ -1,26 +1,165 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary */
+  --primary: #00579f;
+  --primary-container: #2d70bb;
+  --on-primary: #ffffff;
+  --on-primary-container: #eef3ff;
+
+  /* Secondary */
+  --secondary: #455e8c;
+  --secondary-container: #b0cafd;
+
+  /* Tertiary */
+  --tertiary: #50585d;
+  --tertiary-container: #697076;
+  --tertiary-fixed: #dce3ea;
+
+  /* Surface hierarchy */
+  --surface: #f9f9ff;
+  --surface-container-low: #f1f3ff;
+  --surface-container: #e8eeff;
+  --surface-container-high: #dfe8ff;
+  --surface-container-highest: #d7e3ff;
+  --surface-container-lowest: #ffffff;
+  --surface-variant: #d7e3ff;
+
+  /* Text */
+  --on-surface: #001b3f;
+  --on-surface-variant: #414751;
+  --on-background: #001b3f;
+  --outline: #727782;
+  --outline-variant: #c1c6d3;
+
+  /* Navigation */
+  --inverse-surface: #13305a;
+  --inverse-on-surface: #ecf0ff;
+  --inverse-primary: #a5c8ff;
+
+  /* Semantic */
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+
+  --background: #f9f9ff;
+}
+
+[data-theme="dark"] {
+  /* Primary */
+  --primary: #a5c8ff;
+  --primary-container: #004a8f;
+  --on-primary: #003063;
+  --on-primary-container: #d4e3ff;
+
+  /* Secondary */
+  --secondary: #b0cafd;
+  --secondary-container: #2c4670;
+
+  /* Tertiary */
+  --tertiary: #bfc6cd;
+  --tertiary-container: #484f55;
+  --tertiary-fixed: #3a4146;
+
+  /* Surface hierarchy */
+  --surface: #0f1419;
+  --surface-container-low: #151b22;
+  --surface-container: #1a2230;
+  --surface-container-high: #21293a;
+  --surface-container-highest: #283143;
+  --surface-container-lowest: #0a0e13;
+  --surface-variant: #283143;
+
+  /* Text */
+  --on-surface: #dfe3eb;
+  --on-surface-variant: #bfc6d3;
+  --on-background: #dfe3eb;
+  --outline: #8b909b;
+  --outline-variant: #414751;
+
+  /* Navigation */
+  --inverse-surface: #0d1f38;
+  --inverse-on-surface: #d8e2f2;
+  --inverse-primary: #7db4f0;
+
+  /* Semantic */
+  --error: #ffb4ab;
+  --error-container: #93000a;
+
+  --background: #0f1419;
 }
 
 @theme inline {
+  /* Fonts */
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Colors */
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-tertiary-fixed: var(--tertiary-fixed);
+
+  --color-surface: var(--surface);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-variant: var(--surface-variant);
+
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-background: var(--on-background);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-inverse-primary: var(--inverse-primary);
+
+  --color-error: var(--error);
+  --color-error-container: var(--error-container);
+
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground: var(--on-surface);
+
+  /* Shadows */
+  --shadow-ghost: 0px 12px 32px rgba(0, 27, 63, 0.04);
+  --shadow-lift: 0px 8px 24px rgba(0, 27, 63, 0.06);
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+}
+
+/* Headlines use Manrope */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 20;
+  font-size: 20px;
+  vertical-align: middle;
 }
