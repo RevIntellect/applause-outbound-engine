@@ -74,7 +74,7 @@ New Campaign (entry form)
 - Approval gate required before advancing.
 
 **Stage 3: Lead Research / Scoring**
-- In Phase 1, this is Claude-powered research (no Apollo API).
+- Claude-powered research. No external enrichment APIs.
 - Claude generates lead list based on ICP output from Stage 2.
 - Leads scored 1-100, classified by role (Economic Buyer, Technical Buyer, Champion, Influencer).
 - Pain-to-person mapping for personalized outreach.
@@ -128,7 +128,6 @@ New Campaign (entry form)
 
 - SalesLoft MCP integration for Stage 5 deployment
 - ZoomInfo MCP for contact data + intent signals (Stages 1-2)
-- Apollo API for Stage 3 lead enrichment
 - Stage 6: Enablement content generation (video scripts, objection handlers, battle cards)
 - Tools under evaluation: Nooks, CommonRoom.io
 

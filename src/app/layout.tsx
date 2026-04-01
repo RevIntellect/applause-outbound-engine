@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import Sidebar from "@/components/layout/Sidebar";
-import TopNav from "@/components/layout/TopNav";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -18,7 +17,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Applause Outbound Engine",
   description:
-    "Execute the full Applause outbound prospecting pipeline in a single interface.",
+    "Applause outbound prospecting pipeline dashboard.",
 };
 
 export default function RootLayout({
@@ -39,10 +38,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full bg-surface text-on-surface">
         <Sidebar />
-        <div className="ml-64 flex flex-col min-h-screen">
-          <TopNav />
-          <main className="flex-1 p-6">{children}</main>
-        </div>
+        <main className="ml-64 min-h-screen p-6">{children}</main>
       </body>
     </html>
   );

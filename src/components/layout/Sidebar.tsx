@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { label: "Walkthrough", icon: "dashboard", href: "/" },
-  { label: "Skills", icon: "psychology", href: "/skills" },
-  { label: "Outputs", icon: "description", href: "/outputs" },
+  { label: "Overview", icon: "dashboard", href: "/" },
+  { label: "Account Intelligence", icon: "person_search", href: "/intelligence" },
+  { label: "SalesLoft Cadences", icon: "mail", href: "/cadences" },
+  { label: "Briefing Doc", icon: "description", href: "/briefing" },
+  { label: "Detailed Reports", icon: "summarize", href: "/reports" },
   { label: "Analytics", icon: "analytics", href: "/analytics" },
 ];
 
@@ -82,18 +84,6 @@ export default function Sidebar() {
 
       {/* Bottom section */}
       <div className="px-3 pb-4 space-y-1">
-        {/* New Campaign CTA */}
-        <Link
-          href="/campaigns/new"
-          className="flex items-center justify-center gap-2 mx-1 mb-4 px-4 py-2.5 rounded-lg text-sm font-semibold text-on-primary transition-transform hover:scale-[1.02]"
-          style={{ background: "linear-gradient(135deg, #00579f, #2d70bb)" }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-            add_circle
-          </span>
-          New Campaign
-        </Link>
-
         {bottomItems.map((item) => (
           <Link
             key={item.href}
