@@ -101,37 +101,41 @@ export default function Dashboard() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-on-surface mb-1">
-              How a Rep Starts
+              How to Use This Tool
             </h2>
             <p className="text-on-surface-variant text-sm leading-relaxed mb-4">
-              A rep submits their target accounts, either by pasting a list directly or uploading a CSV.
-              They select the target vertical and describe the core business problem they are solving for.
-              That is the only input required. The engine handles everything else.
+              On the New Request tab, submit your targets and solution selections in three steps.
+              Submitted requests route to the Sales Effectiveness team for pipeline configuration.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                  list_alt
-                </span>
-                Paste account list
+
+            <div className="space-y-3 mb-4">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-xs shrink-0" style={{ backgroundColor: "#7c6bc4" }}>1</div>
+                <div>
+                  <div className="text-sm font-semibold text-on-surface">Enter Target Accounts</div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">Paste company names, one per line. These are the accounts you want the pipeline to research and build cadences for.</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                  upload_file
-                </span>
-                Upload CSV
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-xs shrink-0" style={{ backgroundColor: "#7c6bc4" }}>2</div>
+                <div>
+                  <div className="text-sm font-semibold text-on-surface">Upload CSV</div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">Optionally upload a CSV with contacts and accounts for enrichment.</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                  category
-                </span>
-                Select vertical
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-xs shrink-0" style={{ backgroundColor: "#2db87e" }}>3</div>
+                <div>
+                  <div className="text-sm font-semibold text-on-surface">Select Applause Solutions</div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">Choose which solution areas to target. This determines the product positioning in the outbound cadences (Manual Functional Testing, Accessibility, Payments, etc.).</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container text-sm text-on-surface-variant">
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                  edit_note
-                </span>
-                Describe problem
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-xs shrink-0" style={{ backgroundColor: "#4a90d9" }}>4</div>
+                <div>
+                  <div className="text-sm font-semibold text-on-surface">Target Persona / Notes</div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">Add any specific persona targets, special instructions, or context for your request.</p>
+                </div>
               </div>
             </div>
 

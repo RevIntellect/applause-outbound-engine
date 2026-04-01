@@ -73,6 +73,7 @@ export default function IntakePage() {
   const [selectedSolutions, setSelectedSolutions] = useState<Set<string>>(
     new Set()
   );
+  const [personaNotes, setPersonaNotes] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   function toggleSolution(id: string) {
@@ -141,6 +142,14 @@ export default function IntakePage() {
                 {csvFileName ? csvFileName : ""}
               </p>
             </div>
+            {personaNotes.trim() && (
+              <div>
+                <span className="text-[0.6875rem] text-on-surface-variant font-semibold uppercase tracking-wide">
+                  Target Persona / Notes
+                </span>
+                <p className="text-sm text-on-surface mt-0.5">{personaNotes}</p>
+              </div>
+            )}
             <div>
               <span className="text-[0.6875rem] text-on-surface-variant font-semibold uppercase tracking-wide">
                 Solutions Selected
@@ -168,6 +177,7 @@ export default function IntakePage() {
               setAccountNames("");
               setCsvFileName(null);
               setSelectedSolutions(new Set());
+              setPersonaNotes("");
             }}
             className="mt-6 px-5 py-2.5 rounded-lg text-sm font-semibold text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors"
           >
@@ -363,6 +373,34 @@ export default function IntakePage() {
             {selectedSolutions.size !== 1 ? "s" : ""} selected
           </div>
         )}
+      </section>
+
+      {/* Step 3: Target Persona / Notes */}
+      <section className="bg-surface-container-lowest rounded-xl p-6 shadow-ghost">
+        <div className="flex items-center gap-3 mb-2">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+            style={{ backgroundColor: "#4a90d9" }}
+          >
+            3
+          </div>
+          <h2 className="text-base font-semibold text-on-surface">
+            Target Persona / Notes
+          </h2>
+        </div>
+        <p className="text-sm text-on-surface-variant mb-4 ml-11">
+          Any specific persona targets, vertical context, special instructions,
+          or additional notes for this request.
+        </p>
+        <div className="ml-11">
+          <textarea
+            value={personaNotes}
+            onChange={(e) => setPersonaNotes(e.target.value)}
+            placeholder={"e.g. Focus on VP Engineering and Director of QA at Series B+ companies.\nVertical: FinTech / Mobile Banking.\nPrioritize accounts showing hiring signals for QA roles."}
+            rows={4}
+            className="w-full rounded-lg bg-surface-container border border-outline-variant/30 px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+          />
+        </div>
       </section>
 
       {/* Submit */}
