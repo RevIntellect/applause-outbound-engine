@@ -16,54 +16,76 @@ interface FileNode {
 
 const skillTree: FileNode[] = [
   {
-    name: "Applause_Outbound_Engine/",
+    name: "outbound-engine/",
     type: "folder",
     icon: "folder",
     color: "#00579f",
-    description: "Root project directory. The full Applause outbound prospecting system, organized into config, skills, inputs, outputs, and the Next.js application.",
+    description: "Root project directory. The Applause outbound prospecting engine, organized into agents/skills, a 5-stage pipeline with inputs/outputs, stage guides, references, and context.",
     children: [
       {
-        name: "_Config/",
-        type: "folder",
-        icon: "settings",
+        name: "CLAUDE.md",
+        type: "file",
+        icon: "description",
         color: "#7c6bc4",
-        description: "CLAUDE.md master config and pipeline stage guide files. These define the rules, persona, and output schema for every stage of the engine.",
+        description:
+          "The master project instructions file. Defines the full pipeline, communication rules, cadence constraints, stage flow, and all output formats. Claude reads this at the start of every session.",
+        preview: [
+          "# The Applause Outbound Engine",
+          "",
+          "## About",
+          "Executes the full Applause outbound prospecting pipeline",
+          "in a single interface.",
+          "",
+          "## Communication Rules",
+          "- Be concise and direct. No filler.",
+          "- Never use em dashes.",
+          "- Default output formats: .md for drafts, .docx for deliverables.",
+          "",
+          "## Stage Flow",
+          "Stage 1: Market Research (Forensic B2B Analysis)",
+          "Stage 2: ICP Build (Persona matrix, segments, hooks)",
+          "Stage 3: Lead Research (Scoring + role classification)",
+          "Stage 4: Outbound Cadences (Multi-channel sequences)",
+          "Stage 5: Pipeline Output (Compile to deliverable)",
+        ],
+      },
+      {
+        name: "_os/",
+        type: "folder",
+        icon: "smart_toy",
+        color: "#7c6bc4",
+        description: "Agents and skills. The AI personas that power each stage of the pipeline. Each agent has a defined role, task, and output schema.",
         children: [
           {
-            name: "CLAUDE.md",
+            name: "orchestrator.md",
             type: "file",
-            icon: "description",
+            icon: "hub",
             color: "#7c6bc4",
             description:
-              "The master skill file. Defines the full pipeline, communication rules, cadence constraints, stage flow, and all output formats. Claude reads this at the start of every session to understand the engine's behavior.",
+              "The pipeline orchestrator. Coordinates handoffs between stages, manages approval gates, and ensures output from each stage feeds correctly into the next.",
             preview: [
-              "# The Applause Outbound Engine",
+              "# Pipeline Orchestrator",
               "",
-              "## About",
-              "A standalone Next.js web application that executes the full",
-              "Applause outbound prospecting pipeline in a single interface.",
+              "## Role",
+              "You coordinate the full outbound pipeline from intake",
+              "to deliverable. You route inputs to the correct agent,",
+              "validate outputs, and manage stage transitions.",
               "",
-              "## Communication Rules",
-              "- Be concise and direct. No filler.",
-              "- Never use em dashes.",
-              "- Default output formats: .md for drafts, .docx for deliverables.",
-              "",
-              "## Stage Flow",
-              "New Campaign (entry form)",
-              "  -> Stage 1: Discovery (Forensic B2B Analysis)",
-              "  -> Stage 2: ICP Builder (Persona matrix, segments, hooks)",
-              "  -> Stage 3: Lead Research (Claude-powered lead list + scoring)",
-              "  -> Stage 4: Campaign/Cadence (Multi-channel sequences)",
-              "  -> Stage 5: Export (Compile all outputs to .docx)",
+              "## Responsibilities",
+              "- Accept account list from rep intake",
+              "- Route to Stage 1 (Forensic Analyst)",
+              "- Validate and approve stage outputs",
+              "- Manage pipeline state and progression",
+              "- Compile final deliverable",
             ],
           },
           {
-            name: "stage-1-market-research.md",
+            name: "forensic-analyst.md",
             type: "file",
             icon: "search",
             color: "#7c6bc4",
             description:
-              "Stage 1 guide. Instructs Claude to act as a forensic B2B research analyst. Scans for buying signals, competitive landscape, pain discovery, and market triggers. Returns structured signal cards with priority scores.",
+              "Stage 1 agent. Forensic B2B research analyst. Scans for buying signals, competitive landscape, pain discovery, and market triggers.",
             preview: [
               "# Forensic Research Analyst",
               "",
@@ -72,25 +94,19 @@ const skillTree: FileNode[] = [
               "identifying high-value buying signals for outbound sales.",
               "",
               "## Task",
-              "Given a list of target accounts and a vertical context,",
-              "analyze each company for:",
+              "Analyze each company for:",
               "- Active buying signals (hiring, funding, tech changes)",
               "- Competitive displacement opportunities",
               "- Pain indicators mapped to Applause solutions",
-              "",
-              "## Output Schema",
-              "Return an array of SignalCard objects with:",
-              "company, industry, employeeCount, priority, signalQuote,",
-              "targetPersonas[]",
             ],
           },
           {
-            name: "stage-2-icp-build.md",
+            name: "icp-builder.md",
             type: "file",
             icon: "person_search",
             color: "#2db87e",
             description:
-              "Stage 2 guide. Builds ideal customer profiles and persona matrices. Enriches leads with data quality scores and intent signals. Classifies each contact by enrichment status.",
+              "Stage 2 agent. Strategic ICP builder. Builds persona matrices, enriches leads, and scores contacts by fit and intent.",
             preview: [
               "# Strategic ICP Builder",
               "",
@@ -98,156 +114,156 @@ const skillTree: FileNode[] = [
               "You are a strategic ICP builder and lead enrichment agent.",
               "",
               "## Task",
-              "Given discovery output from Stage 1, build enriched lead",
-              "profiles for each account:",
+              "Build enriched lead profiles for each account:",
               "- Score contacts 1-100 on data quality and fit",
               "- Tag enrichment signals (LinkedIn, email, Crunchbase)",
               "- Flag low-signal leads for manual review",
-              "",
-              "## Output Schema",
-              "Return LeadProfile objects with:",
-              "name, title, company, score, role, enrichmentSignals[],",
-              "status (enriched | pending | low-signal)",
             ],
           },
           {
-            name: "stage-3-lead-research.md",
+            name: "lead-research-assistant.md",
             type: "file",
             icon: "leaderboard",
             color: "#4a90d9",
             description:
-              "Stage 3 guide. Deep research on approved leads. Classifies by buyer role (Economic Buyer, Technical Buyer, Champion, Influencer) and maps specific pain points to each person for personalized outreach.",
+              "Stage 3 agent. Lead research assistant. Deep research on approved leads. Classifies by buyer role and maps pain points to individuals.",
             preview: [
-              "# Lead Research Agent",
+              "# Lead Research Assistant",
               "",
               "## Role",
               "You are a lead research and scoring specialist.",
               "",
               "## Task",
-              "Given enriched leads from Stage 2, perform deep research:",
               "- Score each lead 1-100 on outreach priority",
               "- Classify: Economic Buyer, Technical Buyer,",
               "  Champion, or Influencer",
               "- Map specific pain points to each individual",
-              "",
-              "## Cadence Assignment Rules",
-              "- Economic Buyer (80-100): Extended (21 days, 12 touches)",
-              "- Technical Buyer (70-89): Standard (14 days, 8-10 touches)",
-              "- Champion (60-79): Compact (7 days, 5 touches)",
-              "- Influencer (50-59): Compact (7 days, 5 touches)",
             ],
           },
           {
-            name: "stage-4-cold-outbound-cadence.md",
+            name: "cadence-creator.md",
             type: "file",
             icon: "mail",
             color: "#d4843e",
             description:
-              "Stage 4 guide. Generates the full multi-channel outbound cadence. Writes emails (120 words max), LinkedIn messages (75 words max), and phone talk tracks (30 seconds max). Enforces all cadence rules from CLAUDE.md.",
+              "Stage 4 agent. Cold outbound cadence creator. Generates multi-channel sequences with strict word limits across email, LinkedIn, and phone.",
             preview: [
-              "# Cold Messaging Pro",
+              "# Cadence Creator",
               "",
               "## Role",
               "You are a cold outbound cadence specialist.",
               "",
               "## Cadence Rules (STRICT)",
-              "Email: 120-word max. No em dashes. Email 1 never asks",
-              "for a meeting. HTML format with <div> and <br /> tags.",
-              "Subject lines: 1-4 words, boring > clever.",
-              "",
-              "Phone: Talk track under 30 sec. Voicemail under 20 sec.",
-              "Reference same initiative from email.",
-              "",
+              "Email: 120-word max. No em dashes.",
+              "Phone: Talk track under 30 sec.",
               "LinkedIn: Connection request under 300 chars.",
-              "No pitch, no Applause mention. Messages under 75 words.",
+            ],
+          },
+        ],
+      },
+      {
+        name: "pipeline/",
+        type: "folder",
+        icon: "route",
+        color: "#2db87e",
+        description: "The 5-stage pipeline. Each stage has its own folder with inputs/ and outputs/ subdirectories. Data flows from stage 1 through stage 5 sequentially.",
+        children: [
+          {
+            name: "stage-1-market-research/",
+            type: "folder",
+            icon: "search",
+            color: "#7c6bc4",
+            description:
+              "Stage 1: Market Research. Forensic B2B analysis. Inputs are account lists. Outputs are signal cards with priority scores and buying triggers.",
+            children: [
+              { name: "inputs/", type: "folder", icon: "input", color: "#7c6bc4", description: "Account lists, vertical context, and targeting criteria submitted by reps." },
+              { name: "outputs/", type: "folder", icon: "output", color: "#7c6bc4", description: "Signal cards, priority rankings, competitor analysis, and pain mapping per account." },
             ],
           },
           {
-            name: "stage-5-campaign-deploy.md",
-            type: "file",
+            name: "stage-2-icp-build/",
+            type: "folder",
+            icon: "person_search",
+            color: "#2db87e",
+            description:
+              "Stage 2: ICP Build. Persona matrices and lead enrichment. Inputs are Stage 1 signals. Outputs are enriched lead profiles with scores.",
+            children: [
+              { name: "inputs/", type: "folder", icon: "input", color: "#2db87e", description: "Stage 1 signal output, account priority data." },
+              { name: "outputs/", type: "folder", icon: "output", color: "#2db87e", description: "ICP personas, enriched lead profiles, scoring matrices." },
+            ],
+          },
+          {
+            name: "stage-3-lead-research/",
+            type: "folder",
+            icon: "leaderboard",
+            color: "#4a90d9",
+            description:
+              "Stage 3: Lead Research. Scoring and role classification. Inputs are ICP profiles. Outputs are scored leads with pain-to-person mapping.",
+            children: [
+              { name: "inputs/", type: "folder", icon: "input", color: "#4a90d9", description: "Stage 2 ICP profiles and enrichment data." },
+              { name: "outputs/", type: "folder", icon: "output", color: "#4a90d9", description: "Scored lead list, role classifications, cadence type assignments." },
+            ],
+          },
+          {
+            name: "stage-4-outbound-cadences/",
+            type: "folder",
+            icon: "mail",
+            color: "#d4843e",
+            description:
+              "Stage 4: Outbound Cadences. Multi-channel sequence generation. Inputs are scored leads. Outputs are complete cadences per contact.",
+            children: [
+              { name: "inputs/", type: "folder", icon: "input", color: "#d4843e", description: "Stage 3 scored leads with role and pain mapping." },
+              { name: "outputs/", type: "folder", icon: "output", color: "#d4843e", description: "Full cadences: emails, LinkedIn messages, phone scripts per contact." },
+            ],
+          },
+          {
+            name: "stage-5-pipeline-output/",
+            type: "folder",
             icon: "download",
             color: "#c94e7c",
             description:
-              "Stage 5 guide. Compiles all pipeline outputs into a single deliverable document. Formats for Google Drive upload. Phase 2 will add direct SalesLoft push.",
-            preview: [
-              "# Campaign Deploy / Output Compiler",
-              "",
-              "## Role",
-              "You are a document compiler and formatter.",
-              "",
-              "## Task",
-              "Compile all pipeline outputs into a single .docx:",
-              "1. Discovery intake and signal analysis",
-              "2. ICP package with enrichment data",
-              "3. Scored lead list with role classifications",
-              "4. Full email sequences (HTML formatted)",
-              "5. Phone talk tracks and voicemail scripts",
-              "6. LinkedIn connection requests and messages",
-              "",
-              "## Format",
-              "Google Docs compatible .docx with clear section headers,",
-              "tables for lead data, and formatted email previews.",
+              "Stage 5: Pipeline Output. Final compilation. Inputs are all prior stage outputs. Output is the complete deliverable document.",
+            children: [
+              { name: "inputs/", type: "folder", icon: "input", color: "#c94e7c", description: "All outputs from stages 1-4." },
+              { name: "outputs/", type: "folder", icon: "output", color: "#c94e7c", description: "Final compiled Google Doc / .docx deliverable for the rep." },
             ],
           },
         ],
       },
       {
-        name: "_Skills/",
-        type: "folder",
-        icon: "psychology",
-        color: "#2db87e",
-        description: "Active skill definitions only. Each skill is a self-contained Claude instruction set for a specific capability within the engine.",
-      },
-      {
-        name: "_Inputs/",
-        type: "folder",
-        icon: "input",
-        color: "#4a90d9",
-        description: "Prospects, templates, blueprints, and video assets. Raw materials that feed into campaign creation. Includes account lists, CSV uploads, and reusable templates.",
-      },
-      {
-        name: "Outputs/",
-        type: "folder",
-        icon: "output",
-        color: "#d4843e",
-        description: "Campaign outputs organized by vertical and date. Each campaign run generates a folder with the full pipeline output: forensic analysis, ICP profiles, scored leads, and cadences.",
-      },
-      {
-        name: "Presentations/",
-        type: "folder",
-        icon: "slideshow",
-        color: "#c94e7c",
-        description: "Active decks only. Leadership presentations, pipeline demos, and walkthrough materials for stakeholder reviews.",
-      },
-      {
-        name: "App/",
-        type: "folder",
-        icon: "code",
-        color: "#00579f",
-        description: "The Sr PM in a Box Next.js application. This is the web interface that orchestrates the full pipeline, built with Next.js 16, Tailwind CSS, and Claude API integration.",
-        children: [
-          {
-            name: "src/",
-            type: "folder",
-            icon: "folder",
-            color: "#00579f",
-            description: "Application source code. Pages, components, API routes, and library utilities.",
-          },
-        ],
-      },
-      {
-        name: "Playbooks/",
+        name: "guides/",
         type: "folder",
         icon: "menu_book",
         color: "#455e8c",
-        description: "SOPs and guides. Standard operating procedures for running campaigns, onboarding reps, and managing the pipeline end to end.",
+        description: "Stage guides. Step-by-step instructions for each pipeline stage, defining inputs, process, and expected outputs.",
+        children: [
+          { name: "stage-1-market-research.md", type: "file", icon: "search", color: "#7c6bc4", description: "Guide for Stage 1: how to run forensic B2B analysis, what signals to look for, and how to structure output." },
+          { name: "stage-2-icp-build.md", type: "file", icon: "person_search", color: "#2db87e", description: "Guide for Stage 2: how to build ICP profiles, scoring criteria, and enrichment signal definitions." },
+          { name: "stage-3-lead-research.md", type: "file", icon: "leaderboard", color: "#4a90d9", description: "Guide for Stage 3: lead scoring methodology, role classification rules, and cadence assignment criteria." },
+          { name: "stage-4-outbound-cadences.md", type: "file", icon: "mail", color: "#d4843e", description: "Guide for Stage 4: cadence rules, word limits, channel-specific constraints, and sequence pacing by buyer role." },
+          { name: "stage-5-pipeline-output.md", type: "file", icon: "download", color: "#c94e7c", description: "Guide for Stage 5: document compilation format, section structure, and delivery workflow." },
+        ],
       },
       {
-        name: "z_Archive/",
+        name: "_references/",
         type: "folder",
-        icon: "inventory_2",
+        icon: "library_books",
+        color: "#d4843e",
+        description: "Output format template and reference documentation. Defines the structure and formatting standards for all pipeline deliverables.",
+        children: [
+          { name: "output-format-template.md", type: "file", icon: "article", color: "#d4843e", description: "The canonical output format template. Defines section headers, table structures, and formatting for the final deliverable." },
+          { name: "README.md", type: "file", icon: "description", color: "#d4843e", description: "Reference documentation overview and index." },
+        ],
+      },
+      {
+        name: "_context/",
+        type: "folder",
+        icon: "info",
         color: "#727782",
-        description: "Everything else. Backup files, old skill versions, legacy documents, and deprecated assets. Nothing in this folder is active.",
+        description: "Context files. Background information about Applause, the sales team, and the market that agents reference during pipeline execution.",
+        children: [
+          { name: "README.md", type: "file", icon: "description", color: "#727782", description: "Context overview. Company background, product positioning, competitive landscape, and target market definitions." },
+        ],
       },
     ],
   },
@@ -344,9 +360,9 @@ export default function SkillsPage() {
           Skills / How It Works
         </h1>
         <p className="text-on-surface-variant text-sm mt-1 max-w-[640px] leading-relaxed">
-          The Outbound Engine is powered by a set of Claude skill files. A master
-          CLAUDE.md defines the pipeline rules, and each stage has its own prompt
-          file that instructs Claude on what to generate and how to format the output.
+          The Outbound Engine is powered by a set of Claude agents and a structured
+          pipeline. CLAUDE.md defines the rules. The _os/ folder contains 5 agent
+          personas. The pipeline/ folder has 5 stages, each with inputs and outputs.
         </p>
       </div>
 
@@ -366,13 +382,13 @@ export default function SkillsPage() {
               What is a Claude Skill?
             </h2>
             <p className="text-on-surface-variant text-sm leading-relaxed mb-4">
-              A skill is a structured set of instructions that tells Claude how to behave
-              for a specific task. The CLAUDE.md file at the project root acts as the
-              master playbook. It defines communication rules, output constraints, and
-              the full pipeline flow. Each stage then has its own prompt file with the
-              specific role, task, and output schema for that step.
+              The engine uses a multi-agent architecture. CLAUDE.md at the root defines
+              the pipeline rules and constraints. The _os/ folder contains agent definitions,
+              each with a specific persona, task, and output schema. The pipeline/ folder
+              organizes the 5-stage flow with inputs/ and outputs/ directories per stage.
+              Stage guides in guides/ document the process for each step.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div className="p-3 rounded-lg bg-surface-container">
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>
@@ -389,27 +405,40 @@ export default function SkillsPage() {
               <div className="p-3 rounded-lg bg-surface-container">
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>
-                    folder
+                    smart_toy
                   </span>
                   <span className="text-xs font-semibold text-on-surface uppercase tracking-wide">
-                    prompts/
+                    _os/
                   </span>
                 </div>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
-                  One file per stage. Each defines the AI role, task, rules, and structured output schema.
+                  Agent definitions. Orchestrator, forensic analyst, ICP builder, lead researcher, cadence creator.
                 </p>
               </div>
               <div className="p-3 rounded-lg bg-surface-container">
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>
-                    sync_alt
+                    route
                   </span>
                   <span className="text-xs font-semibold text-on-surface uppercase tracking-wide">
-                    Pipeline
+                    pipeline/
                   </span>
                 </div>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
-                  Each stage feeds its output into the next. Approval gates between stages ensure quality.
+                  5 stages, each with inputs/ and outputs/ folders. Data flows sequentially through each stage.
+                </p>
+              </div>
+              <div className="p-3 rounded-lg bg-surface-container">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>
+                    menu_book
+                  </span>
+                  <span className="text-xs font-semibold text-on-surface uppercase tracking-wide">
+                    guides/
+                  </span>
+                </div>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Stage guides defining process, inputs, and expected outputs for each pipeline step.
                 </p>
               </div>
             </div>
