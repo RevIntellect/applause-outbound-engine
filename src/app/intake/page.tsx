@@ -70,6 +70,8 @@ const solutionAreas = [
 export default function IntakePage() {
   const [accountNames, setAccountNames] = useState("");
   const [csvFileName, setCsvFileName] = useState<string | null>(null);
+  const [salesNavUrl, setSalesNavUrl] = useState("");
+  const [freeTextRequest, setFreeTextRequest] = useState("");
   const [selectedSolutions, setSelectedSolutions] = useState<Set<string>>(
     new Set()
   );
@@ -99,7 +101,7 @@ export default function IntakePage() {
     setSubmitted(true);
   }
 
-  const hasAccounts = accountNames.trim().length > 0 || csvFileName;
+  const hasAccounts = accountNames.trim().length > 0 || csvFileName || salesNavUrl.trim().length > 0 || freeTextRequest.trim().length > 0;
   const hasSolutions = selectedSolutions.size > 0;
   const canSubmit = hasAccounts && hasSolutions;
 
@@ -140,6 +142,10 @@ export default function IntakePage() {
                   : ""}
                 {accountNames.trim() && csvFileName ? " + " : ""}
                 {csvFileName ? csvFileName : ""}
+                {(accountNames.trim() || csvFileName) && salesNavUrl.trim() ? " + " : ""}
+                {salesNavUrl.trim() ? "Sales Nav list" : ""}
+                {(accountNames.trim() || csvFileName || salesNavUrl.trim()) && freeTextRequest.trim() ? " + " : ""}
+                {freeTextRequest.trim() ? "Free text request" : ""}
               </p>
             </div>
             {personaNotes.trim() && (
@@ -178,6 +184,8 @@ export default function IntakePage() {
               setCsvFileName(null);
               setSelectedSolutions(new Set());
               setPersonaNotes("");
+              setSalesNavUrl("");
+              setFreeTextRequest("");
             }}
             className="mt-6 px-5 py-2.5 rounded-lg text-sm font-semibold text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors"
           >
@@ -202,7 +210,7 @@ export default function IntakePage() {
         </p>
       </div>
 
-      {/* Step 1: Accounts */}
+      {/* Step 1: Accounts & Inputs */}
       <section className="bg-surface-container-lowest rounded-xl p-6 shadow-ghost">
         <div className="flex items-center gap-3 mb-4">
           <div
@@ -217,56 +225,43 @@ export default function IntakePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Text input */}
+          {/* 1. Enter Account Names */}
           <div>
             <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
               <span className="flex items-center gap-1.5">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 14 }}
-                >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                   list_alt
                 </span>
-                Paste Account Names
+                Enter Account Names
               </span>
             </label>
             <textarea
               value={accountNames}
               onChange={(e) => setAccountNames(e.target.value)}
               placeholder={"Harness\nGlean\nJasper.ai\nDatadog"}
-              rows={6}
+              rows={5}
               className="w-full rounded-lg bg-surface-container border border-outline-variant/30 px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
-            <p className="text-xs text-outline mt-1.5">
-              One account per line.
-            </p>
+            <p className="text-xs text-outline mt-1.5">One account per line.</p>
           </div>
 
-          {/* CSV upload */}
+          {/* 2. Upload CSV */}
           <div>
             <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
               <span className="flex items-center gap-1.5">
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 14 }}
-                >
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
                   upload_file
                 </span>
-                Upload CSV
+                Upload CSV with Accounts &amp; Contacts
               </span>
             </label>
-            <div className="h-[168px] rounded-lg border-2 border-dashed border-outline-variant/40 flex flex-col items-center justify-center gap-2 hover:border-primary/40 transition-colors relative">
+            <div className="h-[148px] rounded-lg border-2 border-dashed border-outline-variant/40 flex flex-col items-center justify-center gap-2 hover:border-primary/40 transition-colors relative">
               {csvFileName ? (
                 <>
-                  <span
-                    className="material-symbols-outlined text-primary"
-                    style={{ fontSize: 28 }}
-                  >
+                  <span className="material-symbols-outlined text-primary" style={{ fontSize: 28 }}>
                     description
                   </span>
-                  <span className="text-sm text-on-surface font-medium">
-                    {csvFileName}
-                  </span>
+                  <span className="text-sm text-on-surface font-medium">{csvFileName}</span>
                   <button
                     type="button"
                     onClick={() => setCsvFileName(null)}
@@ -277,18 +272,11 @@ export default function IntakePage() {
                 </>
               ) : (
                 <>
-                  <span
-                    className="material-symbols-outlined text-outline"
-                    style={{ fontSize: 28 }}
-                  >
+                  <span className="material-symbols-outlined text-outline" style={{ fontSize: 28 }}>
                     cloud_upload
                   </span>
-                  <span className="text-sm text-on-surface-variant">
-                    Drop CSV here or click to browse
-                  </span>
-                  <span className="text-xs text-outline">
-                    Contacts and accounts
-                  </span>
+                  <span className="text-sm text-on-surface-variant">Drop CSV here or click to browse</span>
+                  <span className="text-xs text-outline">Accounts and contacts</span>
                 </>
               )}
               <input
@@ -298,6 +286,46 @@ export default function IntakePage() {
                 className="absolute inset-0 opacity-0 cursor-pointer"
               />
             </div>
+          </div>
+
+          {/* 3. LinkedIn Sales Navigator */}
+          <div>
+            <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                  link
+                </span>
+                Share LinkedIn Sales Navigator List
+              </span>
+            </label>
+            <input
+              type="text"
+              value={salesNavUrl}
+              onChange={(e) => setSalesNavUrl(e.target.value)}
+              placeholder="Paste Sales Navigator list URL..."
+              className="w-full rounded-lg bg-surface-container border border-outline-variant/30 px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+            <p className="text-xs text-outline mt-1.5">Share a saved list or search URL from Sales Navigator.</p>
+          </div>
+
+          {/* 4. Free Text Request */}
+          <div>
+            <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                  edit_note
+                </span>
+                Free Text Request
+              </span>
+            </label>
+            <textarea
+              value={freeTextRequest}
+              onChange={(e) => setFreeTextRequest(e.target.value)}
+              placeholder={"e.g. Find Series B+ FinTech companies with 500+ employees that are hiring QA engineers..."}
+              rows={3}
+              className="w-full rounded-lg bg-surface-container border border-outline-variant/30 px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            />
+            <p className="text-xs text-outline mt-1.5">Describe what you are looking for in your own words.</p>
           </div>
         </div>
       </section>

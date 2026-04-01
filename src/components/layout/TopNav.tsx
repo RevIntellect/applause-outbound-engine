@@ -38,9 +38,7 @@ export default function TopNav() {
             </Link>
           ))
         ) : (
-          <div className="text-on-surface font-semibold text-sm">
-            Process Overview
-          </div>
+          <div />
         )}
       </div>
 

@@ -108,20 +108,6 @@ export default function Sidebar() {
           {theme === "light" ? "Dark Mode" : "Light Mode"}
         </button>
 
-        {/* User avatar */}
-        <div className="flex items-center gap-3 px-4 py-3 mt-2">
-          <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
-            <span className="text-on-primary text-xs font-bold">AW</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-inverse-on-surface text-sm font-medium truncate">
-              Aaron Wolf
-            </div>
-            <div className="text-inverse-on-surface/50 text-[0.6875rem] truncate">
-              Sr. Manager, Sales
-            </div>
-          </div>
-        </div>
       </div>
     </aside>
   );
