@@ -79,7 +79,7 @@ export default function Dashboard() {
       {/* Hero / Overview */}
       <section>
         <h1 className="font-sans text-[2.25rem] font-bold tracking-[-0.02em] text-on-surface leading-tight">
-          Outbound Engine Walkthrough
+          Introduction & Walkthrough
         </h1>
         <p className="text-on-surface-variant text-[0.9375rem] mt-2 max-w-[640px] leading-relaxed">
           A five-stage AI pipeline that takes a list of target accounts and
