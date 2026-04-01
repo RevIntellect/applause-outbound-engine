@@ -76,18 +76,6 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-[960px] mx-auto space-y-10 pb-12">
-      {/* Hero / Overview */}
-      <section>
-        <h1 className="font-sans text-[2.25rem] font-bold tracking-[-0.02em] text-on-surface leading-tight">
-          Introduction & Walkthrough
-        </h1>
-        <p className="text-on-surface-variant text-[0.9375rem] mt-2 max-w-[640px] leading-relaxed">
-          A five-stage AI pipeline that takes a list of target accounts and
-          delivers a complete, personalized outbound package. Every email, call
-          script, and LinkedIn message, written and ready to execute.
-        </p>
-      </section>
-
       {/* How It Works: Intake */}
       <section className="bg-surface-container-lowest rounded-xl p-6 shadow-ghost">
         <div className="flex items-start gap-4">
@@ -101,11 +89,12 @@ export default function Dashboard() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-on-surface mb-1">
-              How to Use This Tool
+              Process Overview
             </h2>
             <p className="text-on-surface-variant text-sm leading-relaxed mb-4">
-              On the New Request tab, submit your targets and solution selections in three steps.
-              Submitted requests route to the Sales Effectiveness team for pipeline configuration.
+              A five-stage AI pipeline that takes a list of target accounts and
+              delivers a complete, personalized outbound package. Every email, call
+              script, and LinkedIn message, written and ready to execute.
             </p>
 
             <div className="space-y-3 mb-4">

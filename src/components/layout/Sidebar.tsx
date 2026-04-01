@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const navItems = [
-  { label: "Introduction", icon: "dashboard", href: "/" },
+  { label: "Process Overview", icon: "dashboard", href: "/" },
   { label: "New Request", icon: "add_circle", href: "/intake" },
   { label: "Skills", icon: "psychology", href: "/skills" },
   { label: "Outputs", icon: "description", href: "/outputs" },
