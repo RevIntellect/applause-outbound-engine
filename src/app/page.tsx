@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SkillsSection } from "./skills/page";
 
 const pipelineStages = [
   {
@@ -268,6 +269,9 @@ export default function Dashboard() {
           );
         })()}
       </section>
+
+      {/* Skills & Architecture */}
+      <SkillsSection />
 
       {/* What Reps Receive */}
       <section className="bg-surface-container-lowest rounded-xl p-6 shadow-ghost">

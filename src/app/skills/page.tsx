@@ -677,28 +677,25 @@ function FolderTree({
   );
 }
 
-/* ── Page ── */
+/* ── Embeddable Skills Section ── */
 
-export default function SkillsPage() {
+export function SkillsSection() {
   const [selected, setSelected] = useState<MdFile | null>(claudeMd);
 
   return (
-    <div className="max-w-[960px] mx-auto pb-12 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="font-sans text-[2rem] font-bold tracking-[-0.02em] text-on-surface">
-          Skills
-        </h1>
-        <p className="text-on-surface-variant text-sm mt-1 max-w-[640px] leading-relaxed">
-          The Outbound Engine is powered by Claude skill files. CLAUDE.md defines the pipeline
-          rules, and the _os folder contains the orchestrator and individual stage skills.
-        </p>
+    <section className="space-y-4">
+      <div className="flex items-center gap-3">
+        <h2 className="text-lg font-semibold text-on-surface">
+          Skills &amp; Architecture
+        </h2>
+        <span className="text-xs text-outline font-medium px-2 py-0.5 rounded-md bg-surface-container">
+          CLAUDE.md + 5 agents
+        </span>
       </div>
 
-      {/* Two-column layout */}
-      <section className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-4">
         {/* Tree panel */}
-        <div className="bg-surface-container-lowest rounded-xl shadow-ghost p-3 max-h-[680px] overflow-y-auto">
+        <div className="bg-surface-container-lowest rounded-xl shadow-ghost p-3 max-h-[500px] overflow-y-auto">
           <div className="flex items-center gap-2 px-3 py-2 mb-1">
             <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>
               folder_open
@@ -714,7 +711,6 @@ export default function SkillsPage() {
         <div className="bg-surface-container-lowest rounded-xl shadow-ghost overflow-hidden">
           {selected ? (
             <>
-              {/* File header */}
               <div className="flex items-center gap-3 px-5 py-3 border-b border-outline-variant/15">
                 <span
                   className="material-symbols-outlined"
@@ -724,9 +720,7 @@ export default function SkillsPage() {
                 </span>
                 <span className="text-sm font-semibold text-on-surface">{selected.path}</span>
               </div>
-
-              {/* Markdown content */}
-              <div className="bg-inverse-surface rounded-b-xl p-5 max-h-[600px] overflow-y-auto">
+              <div className="bg-inverse-surface rounded-b-xl p-5 max-h-[420px] overflow-y-auto">
                 {renderMarkdown(selected.content)}
               </div>
             </>
@@ -741,7 +735,17 @@ export default function SkillsPage() {
             </div>
           )}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
+
+/* ── Page (kept for direct /skills route) ── */
+
+export default function SkillsPage() {
+  return (
+    <div className="max-w-[960px] mx-auto pb-12 space-y-6">
+      <SkillsSection />
     </div>
   );
 }
