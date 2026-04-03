@@ -70,7 +70,7 @@ const campaigns: Campaign[] = [
     touches: 27,
     summary:
       "WiFi pairing failures, peak-hour load collapse, and checkout crashes. Device fragmentation across consumer IoT, regulated sports betting, and hospitality booking flows.",
-    embedUrl: null,
+    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vTn3Y4IamUfl2YwTNbsxlYDIKw2WDPz_F3ed0KkA2K3POCHcmdOceKS5TwK_iGX1c35HBZrVvR2v35F/pub?embedded=true",
   },
   {
     id: "israel",
