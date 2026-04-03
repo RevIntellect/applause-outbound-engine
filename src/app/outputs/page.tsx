@@ -165,7 +165,7 @@ const campaigns: Campaign[] = [
     touches: 86,
     summary:
       "Accessibility testing campaign. Booking.com: DMA gatekeeper, EAA June 2025, screen reader failures. Oura: VoiceOver broken since 2019, 40M EUR EAA exposure. Checkout.com: partially conformant, SCA accessibility gaps.",
-    embedUrl: "https://docs.google.com/document/d/1putmi1s5OM47uLFNzILXotsQ5_e26lAMx85F228dw94/preview",
+    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vRpBH4TtR2czEFhIlqy48tYhMJTSOv5f5hi9kDq9vCMvCyf8kZWMYTrSPY78dfQgASf9eXLVIDcisr7/pub?embedded=true",
   },
 ];
 
