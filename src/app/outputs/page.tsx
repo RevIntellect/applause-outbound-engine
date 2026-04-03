@@ -15,7 +15,7 @@ interface Campaign {
   cadences: number;
   touches: number;
   summary: string;
-  embedUrl: string | null;
+  docUrl: string | null;
 }
 
 const campaigns: Campaign[] = [
@@ -52,7 +52,7 @@ const campaigns: Campaign[] = [
     touches: 635,
     summary:
       "Consolidated output across all 6 campaigns. 23 accounts (1 disqualified), 90+ contacts, full pipeline from forensic analysis through outbound cadences. MFT and Accessibility campaigns.",
-    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vSPDYxLHNwIHfy7cKRWLPYwTZimIWhEc31W8GnSls3S_-xrqeC8xc-z9kEqZHUzThc-sLJvCPI7Cp9i/pub?embedded=true",
+    docUrl: "https://docs.google.com/document/d/e/2PACX-1vSPDYxLHNwIHfy7cKRWLPYwTZimIWhEc31W8GnSls3S_-xrqeC8xc-z9kEqZHUzThc-sLJvCPI7Cp9i/pub",
   },
   {
     id: "sharkninja",
@@ -70,7 +70,7 @@ const campaigns: Campaign[] = [
     touches: 27,
     summary:
       "WiFi pairing failures, peak-hour load collapse, and checkout crashes. Device fragmentation across consumer IoT, regulated sports betting, and hospitality booking flows.",
-    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vTn3Y4IamUfl2YwTNbsxlYDIKw2WDPz_F3ed0KkA2K3POCHcmdOceKS5TwK_iGX1c35HBZrVvR2v35F/pub?embedded=true",
+    docUrl: "https://docs.google.com/document/d/e/2PACX-1vTn3Y4IamUfl2YwTNbsxlYDIKw2WDPz_F3ed0KkA2K3POCHcmdOceKS5TwK_iGX1c35HBZrVvR2v35F/pub",
   },
   {
     id: "israel",
@@ -92,7 +92,7 @@ const campaigns: Campaign[] = [
     touches: 62,
     summary:
       "Studio adoption stalled at 8%, 250 games monthly at device risk, regulatory remediation mode, overlay breakage after game updates, cross-platform fairness for esports, and preview-reality gaps.",
-    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vTQK8sCtrrgYtIBS5E03-EB4yerfUBqDnVH4vrwob7As6V5TT-qmLeAM6RLJuC9q4qCYEU0EVoY28qa/pub?embedded=true",
+    docUrl: "https://docs.google.com/document/d/e/2PACX-1vTQK8sCtrrgYtIBS5E03-EB4yerfUBqDnVH4vrwob7As6V5TT-qmLeAM6RLJuC9q4qCYEU0EVoY28qa/pub",
   },
   {
     id: "jasper-harness-glean-v2",
@@ -110,7 +110,7 @@ const campaigns: Campaign[] = [
     touches: 280,
     summary:
       "30 prioritized contacts across all three companies. Full cadences with 2-3 email variants per step, phone talk tracks, LinkedIn touches. Harness: multi-browser testing gaps. Glean: connector failures. Jasper: platform instability.",
-    embedUrl: "https://docs.google.com/document/d/1mBuf4ay4APAqg94hT-GvLFXIMBnJ55yhsayJPmqctBs/preview",
+    docUrl: "https://docs.google.com/document/d/1mBuf4ay4APAqg94hT-GvLFXIMBnJ55yhsayJPmqctBs/preview",
   },
   {
     id: "jasper-harness-glean-v1",
@@ -129,7 +129,7 @@ const campaigns: Campaign[] = [
     touches: 102,
     summary:
       "Initial run. SSI disqualified (no product, ~20 researchers). Glean: 100+ connectors, hallucination risk. Harness: 36 incidents in 90 days. Jasper: 15-20% hallucination rate, Chrome-only support.",
-    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vRVEWb1bYnO9JR-kigxT60ARl2W5GNeUrfA_R0uT_ZKCaXtLppxheazzMbyAWoW0A/pub?embedded=true",
+    docUrl: "https://docs.google.com/document/d/e/2PACX-1vRVEWb1bYnO9JR-kigxT60ARl2W5GNeUrfA_R0uT_ZKCaXtLppxheazzMbyAWoW0A/pub",
   },
   {
     id: "snap-robinhood-intuit",
@@ -147,7 +147,7 @@ const campaigns: Campaign[] = [
     touches: 78,
     summary:
       "Director/Manager level targeting. Snap: Camera2 API fragmentation across 600+ Android models, Spectacles 2026 launch. Robinhood: prediction markets $300M ARR target, UK/EU expansion. Intuit: tax season functional failures, multi-product consolidation.",
-    embedUrl: null,
+    docUrl: null,
   },
   {
     id: "accessibility",
@@ -165,17 +165,17 @@ const campaigns: Campaign[] = [
     touches: 86,
     summary:
       "Accessibility testing campaign. Booking.com: DMA gatekeeper, EAA June 2025, screen reader failures. Oura: VoiceOver broken since 2019, 40M EUR EAA exposure. Checkout.com: partially conformant, SCA accessibility gaps.",
-    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vRpBH4TtR2czEFhIlqy48tYhMJTSOv5f5hi9kDq9vCMvCyf8kZWMYTrSPY78dfQgASf9eXLVIDcisr7/pub?embedded=true",
+    docUrl: "https://docs.google.com/document/d/e/2PACX-1vRpBH4TtR2czEFhIlqy48tYhMJTSOv5f5hi9kDq9vCMvCyf8kZWMYTrSPY78dfQgASf9eXLVIDcisr7/pub",
   },
 ];
 
-/* ── Priority badge ── */
+/* ── Badges ── */
 
 function TypeBadge({ type }: { type: string }) {
   const isA11y = type === "Accessibility";
   return (
     <span
-      className="text-[0.6875rem] font-bold px-2 py-0.5 rounded uppercase tracking-wide"
+      className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
       style={{
         backgroundColor: isA11y ? "#00579f20" : "#2db87e20",
         color: isA11y ? "#00579f" : "#1a7a4e",
@@ -187,11 +187,15 @@ function TypeBadge({ type }: { type: string }) {
 }
 
 function FitBadge({ score }: { score: number | null }) {
-  if (score === null) return <span className="text-[0.625rem] text-outline">DQ</span>;
+  if (score === null)
+    return <span className="text-[0.625rem] text-outline">DQ</span>;
   const color = score >= 85 ? "#1a7a4e" : score >= 75 ? "#d4843e" : "#727782";
   const bg = score >= 85 ? "#2db87e20" : score >= 75 ? "#d4843e20" : "#72778220";
   return (
-    <span className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: bg, color }}>
+    <span
+      className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded"
+      style={{ backgroundColor: bg, color }}
+    >
       {score}
     </span>
   );
@@ -200,147 +204,270 @@ function FitBadge({ score }: { score: number | null }) {
 /* ── Page ── */
 
 export default function OutputsPage() {
-  const [selectedId, setSelectedId] = useState<string>("consolidated");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const current = campaigns.find((c) => c.id === selectedId)!;
-  const qualified = current.accounts.filter((a) => a.status === "qualified");
-  const disqualified = current.accounts.filter((a) => a.status === "disqualified");
+  const active = campaigns.find((c) => c.id === selectedId);
 
   return (
-    <div className="max-w-[960px] mx-auto pb-12 space-y-8">
+    <div className="max-w-[960px] mx-auto pb-12 space-y-6">
       {/* Header */}
       <div>
         <h1 className="font-sans text-[2rem] font-bold tracking-[-0.02em] text-on-surface">
           Pipeline Outputs
         </h1>
         <p className="text-on-surface-variant text-sm mt-1 max-w-[640px] leading-relaxed">
-          6 campaigns, 23 accounts, 90+ contacts. Full pipeline output from
-          forensic analysis through outbound cadences.
+          {campaigns.length} campaigns, 23 accounts, 90+ contacts. Select a
+          campaign to view the report.
         </p>
       </div>
 
-      {/* Campaign selector */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      {/* Campaign Tiles */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {campaigns.map((c) => {
-          const isActive = selectedId === c.id;
+          const isSelected = selectedId === c.id;
+          const qualified = c.accounts.filter((a) => a.status === "qualified");
+
           return (
             <button
               key={c.id}
-              type="button"
-              onClick={() => setSelectedId(c.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-[0.8125rem] font-medium shrink-0 transition-all ${
-                isActive
-                  ? "text-white shadow-lift"
-                  : "bg-surface-container-lowest text-on-surface-variant shadow-ghost hover:shadow-lift"
+              onClick={() => setSelectedId(isSelected ? null : c.id)}
+              className={`relative text-left px-5 py-4 rounded-xl transition-all ${
+                isSelected
+                  ? "bg-surface-container-lowest shadow-lift ring-2 ring-primary"
+                  : "bg-surface-container-lowest shadow-ghost hover:shadow-lift"
               }`}
-              style={isActive ? { backgroundColor: c.color } : {}}
             >
-              {c.title.length > 30 ? c.title.substring(0, 28) + "..." : c.title}
-              <TypeBadge type={c.type} />
+              {isSelected && (
+                <div
+                  className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl"
+                  style={{ backgroundColor: c.color }}
+                />
+              )}
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-sm font-semibold text-on-surface leading-tight">
+                    {c.title}
+                  </h2>
+                </div>
+                <TypeBadge type={c.type} />
+              </div>
+              <p className="text-[0.6875rem] text-on-surface-variant mb-2">
+                {c.date}
+              </p>
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {c.accounts.slice(0, 4).map((a) => (
+                  <span
+                    key={a.name}
+                    className={`text-[0.625rem] px-1.5 py-0.5 rounded ${
+                      a.status === "disqualified"
+                        ? "bg-surface-container text-outline line-through"
+                        : "bg-surface-container text-on-surface-variant"
+                    }`}
+                  >
+                    {a.name}
+                  </span>
+                ))}
+                {c.accounts.length > 4 && (
+                  <span className="text-[0.625rem] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
+                    +{c.accounts.length - 4} more
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-3 text-[0.625rem] text-on-surface-variant">
+                <span>{qualified.length} accounts</span>
+                <span>{c.contacts} contacts</span>
+                <span>{c.touches} touches</span>
+              </div>
             </button>
           );
         })}
       </div>
 
-      {/* Campaign detail */}
-      <div className="bg-surface-container-lowest rounded-xl shadow-ghost overflow-hidden">
-        {/* Title bar */}
-        <div className="px-6 py-4" style={{ borderBottom: `3px solid ${current.color}` }}>
-          <div className="flex items-center gap-4">
+      {/* Expanded Campaign Report */}
+      {active && (
+        <div className="bg-surface-container-lowest rounded-xl shadow-lift overflow-hidden">
+          {/* Report Header */}
+          <div
+            className="px-6 py-4 flex items-center gap-4"
+            style={{ borderBottom: `3px solid ${active.color}` }}
+          >
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
-              style={{ backgroundColor: current.color }}
+              style={{ backgroundColor: active.color }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                {current.type === "Accessibility" ? "accessibility_new" : "devices"}
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 20 }}
+              >
+                {active.type === "Accessibility"
+                  ? "accessibility_new"
+                  : "devices"}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-base font-semibold text-on-surface">{current.title}</h2>
-              <p className="text-xs text-on-surface-variant">{current.type} Campaign / {current.date}</p>
+              <h2 className="text-lg font-semibold text-on-surface">
+                {active.title}
+              </h2>
+              <p className="text-xs text-on-surface-variant">
+                {active.type} Campaign / {active.date}
+              </p>
+            </div>
+          </div>
+
+          <div className="px-6 py-5 space-y-5">
+            {/* Stats Row */}
+            <div className="flex flex-wrap gap-5">
+              <div className="flex items-center gap-2">
+                <span
+                  className="material-symbols-outlined text-primary"
+                  style={{ fontSize: 16 }}
+                >
+                  domain
+                </span>
+                <span className="text-sm text-on-surface font-medium">
+                  {
+                    active.accounts.filter((a) => a.status === "qualified")
+                      .length
+                  }
+                </span>
+                <span className="text-xs text-on-surface-variant">
+                  accounts
+                </span>
+                {active.accounts.some((a) => a.status === "disqualified") && (
+                  <span className="text-xs text-outline">
+                    (
+                    {
+                      active.accounts.filter(
+                        (a) => a.status === "disqualified"
+                      ).length
+                    }{" "}
+                    DQ)
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className="material-symbols-outlined text-primary"
+                  style={{ fontSize: 16 }}
+                >
+                  people
+                </span>
+                <span className="text-sm text-on-surface font-medium">
+                  {active.contacts}
+                </span>
+                <span className="text-xs text-on-surface-variant">
+                  contacts
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className="material-symbols-outlined text-primary"
+                  style={{ fontSize: 16 }}
+                >
+                  route
+                </span>
+                <span className="text-sm text-on-surface font-medium">
+                  {active.cadences}
+                </span>
+                <span className="text-xs text-on-surface-variant">
+                  cadences
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className="material-symbols-outlined text-primary"
+                  style={{ fontSize: 16 }}
+                >
+                  touch_app
+                </span>
+                <span className="text-sm text-on-surface font-medium">
+                  {active.touches}
+                </span>
+                <span className="text-xs text-on-surface-variant">touches</span>
+              </div>
+            </div>
+
+            {/* Account Chips */}
+            <div className="flex flex-wrap gap-2">
+              {active.accounts.map((a) => (
+                <div
+                  key={a.name}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+                    a.status === "disqualified"
+                      ? "bg-surface-container text-outline line-through"
+                      : "bg-surface-container text-on-surface"
+                  }`}
+                >
+                  {a.name}
+                  <FitBadge score={a.fit} />
+                </div>
+              ))}
+            </div>
+
+            {/* Summary Box */}
+            <div className="bg-surface-container rounded-lg px-4 py-3">
+              <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">
+                Campaign Summary
+              </div>
+              <p className="text-sm text-on-surface leading-relaxed">
+                {active.summary}
+              </p>
+            </div>
+
+            {/* Google Doc Link */}
+            <div className="border-t border-outline-variant/15 pt-4 flex items-center justify-between">
+              {active.docUrl ? (
+                <a
+                  href={active.docUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 18 }}
+                  >
+                    description
+                  </span>
+                  View Full Google Doc
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 14 }}
+                  >
+                    open_in_new
+                  </span>
+                </a>
+              ) : (
+                <span className="inline-flex items-center gap-2 text-sm text-on-surface-variant">
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 18 }}
+                  >
+                    description
+                  </span>
+                  Google Doc not yet linked
+                </span>
+              )}
+              <button
+                onClick={() => setSelectedId(null)}
+                className="text-xs text-on-surface-variant hover:text-on-surface transition-colors"
+              >
+                Collapse
+              </button>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Stats */}
-        <div className="px-6 py-3 border-b border-outline-variant/15 flex flex-wrap gap-6">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>domain</span>
-            <span className="text-sm text-on-surface font-medium">{qualified.length}</span>
-            <span className="text-xs text-on-surface-variant">accounts</span>
-            {disqualified.length > 0 && (
-              <span className="text-xs text-outline">({disqualified.length} DQ)</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>people</span>
-            <span className="text-sm text-on-surface font-medium">{current.contacts}</span>
-            <span className="text-xs text-on-surface-variant">contacts</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>route</span>
-            <span className="text-sm text-on-surface font-medium">{current.cadences}</span>
-            <span className="text-xs text-on-surface-variant">cadences</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary" style={{ fontSize: 16 }}>touch_app</span>
-            <span className="text-sm text-on-surface font-medium">{current.touches}</span>
-            <span className="text-xs text-on-surface-variant">touches</span>
-          </div>
-        </div>
-
-        {/* Account chips */}
-        <div className="px-6 py-3 border-b border-outline-variant/15 flex flex-wrap gap-2">
-          {current.accounts.map((a) => (
-            <div
-              key={a.name}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
-                a.status === "disqualified"
-                  ? "bg-surface-container text-outline line-through"
-                  : "bg-surface-container text-on-surface"
-              }`}
-            >
-              {a.name}
-              <FitBadge score={a.fit} />
-            </div>
-          ))}
-        </div>
-
-        {/* Description */}
-        <div className="px-6 py-4 border-b border-outline-variant/15">
-          <p className="text-sm text-on-surface-variant leading-relaxed">{current.summary}</p>
-        </div>
-
-        {/* Embedded doc or placeholder */}
-        {current.embedUrl ? (
-          <div className="w-full" style={{ height: "80vh" }}>
-            <iframe
-              src={current.embedUrl}
-              className="w-full h-full border-0"
-              title={`${current.title} Pipeline Output`}
-              allowFullScreen
-            />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <span className="material-symbols-outlined text-outline mb-3" style={{ fontSize: 36 }}>
-              description
-            </span>
-            <p className="text-sm font-medium text-on-surface mb-1">
-              Google Doc coming soon
-            </p>
-            <p className="text-xs text-on-surface-variant max-w-[400px]">
-              Full pipeline output document will be embedded here once published.
-              Content includes all 5 stages: forensic analysis, ICP build, scored leads, cadences, and output document.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Pipeline totals */}
+      {/* Pipeline Totals */}
       <div className="bg-surface-container-lowest rounded-xl p-5 shadow-ghost">
         <h2 className="text-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary" style={{ fontSize: 18 }}>summarize</span>
+          <span
+            className="material-symbols-outlined text-primary"
+            style={{ fontSize: 18 }}
+          >
+            summarize
+          </span>
           Pipeline Totals
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -350,7 +477,9 @@ export default function OutputsPage() {
           </div>
           <div>
             <div className="text-2xl font-bold text-on-surface">23</div>
-            <div className="text-xs text-on-surface-variant">Accounts (1 DQ)</div>
+            <div className="text-xs text-on-surface-variant">
+              Accounts (1 DQ)
+            </div>
           </div>
           <div>
             <div className="text-2xl font-bold text-on-surface">90+</div>
@@ -363,11 +492,17 @@ export default function OutputsPage() {
         </div>
         <div className="flex gap-3 mt-3 pt-3 border-t border-outline-variant/15">
           <span className="text-xs text-on-surface-variant flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#2db87e" }} />
+            <span
+              className="w-2.5 h-2.5 rounded-full"
+              style={{ backgroundColor: "#2db87e" }}
+            />
             5 MFT campaigns
           </span>
           <span className="text-xs text-on-surface-variant flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#00579f" }} />
+            <span
+              className="w-2.5 h-2.5 rounded-full"
+              style={{ backgroundColor: "#00579f" }}
+            />
             1 Accessibility campaign
           </span>
         </div>
