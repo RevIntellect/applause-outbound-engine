@@ -74,7 +74,7 @@ const campaigns: Campaign[] = [
   },
   {
     id: "israel",
-    title: "Israel Accounts (7 companies)",
+    title: "Israel - Manual Functional Testing (7 companies)",
     type: "MFT",
     date: "2026-04-01",
     color: "#2db87e",
@@ -92,7 +92,7 @@ const campaigns: Campaign[] = [
     touches: 62,
     summary:
       "Studio adoption stalled at 8%, 250 games monthly at device risk, regulatory remediation mode, overlay breakage after game updates, cross-platform fairness for esports, and preview-reality gaps.",
-    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vROTL1JZLkrQqKGv2SkwPzeqbor-JWHiMRiZJT58THYj0hGd7Tox0UG1tb6hcPiE7DnKCJRpR5_ANWj/pub?embedded=true",
+    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vTQK8sCtrrgYtIBS5E03-EB4yerfUBqDnVH4vrwob7As6V5TT-qmLeAM6RLJuC9q4qCYEU0EVoY28qa/pub?embedded=true",
   },
   {
     id: "jasper-harness-glean-v2",
