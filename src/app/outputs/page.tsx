@@ -20,6 +20,41 @@ interface Campaign {
 
 const campaigns: Campaign[] = [
   {
+    id: "consolidated",
+    title: "Full Pipeline Output",
+    type: "All",
+    date: "2026-04-01/02",
+    color: "#00579f",
+    accounts: [
+      { name: "SharkNinja", fit: 87, status: "qualified" },
+      { name: "Caesars Sportsbook", fit: 89, status: "qualified" },
+      { name: "Best Western", fit: 84, status: "qualified" },
+      { name: "Elementor", fit: 88, status: "qualified" },
+      { name: "CrazyLabs", fit: 86, status: "qualified" },
+      { name: "Papaya Gaming", fit: 85, status: "qualified" },
+      { name: "Wix", fit: 83, status: "qualified" },
+      { name: "Yotpo", fit: 78, status: "qualified" },
+      { name: "Overwolf", fit: 76, status: "qualified" },
+      { name: "Candivore", fit: 71, status: "qualified" },
+      { name: "Harness", fit: 85, status: "qualified" },
+      { name: "Glean", fit: 89, status: "qualified" },
+      { name: "Jasper", fit: 82, status: "qualified" },
+      { name: "SSI", fit: null, status: "disqualified" },
+      { name: "Snap Inc.", fit: 88, status: "qualified" },
+      { name: "Robinhood", fit: 91, status: "qualified" },
+      { name: "Intuit", fit: 85, status: "qualified" },
+      { name: "Booking.com", fit: 90, status: "qualified" },
+      { name: "Oura", fit: 90, status: "qualified" },
+      { name: "Checkout.com", fit: 80, status: "qualified" },
+    ],
+    contacts: 94,
+    cadences: 77,
+    touches: 635,
+    summary:
+      "Consolidated output across all 6 campaigns. 23 accounts (1 disqualified), 90+ contacts, full pipeline from forensic analysis through outbound cadences. MFT and Accessibility campaigns.",
+    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vSPDYxLHNwIHfy7cKRWLPYwTZimIWhEc31W8GnSls3S_-xrqeC8xc-z9kEqZHUzThc-sLJvCPI7Cp9i/pub?embedded=true",
+  },
+  {
     id: "sharkninja",
     title: "SharkNinja / Caesars / Best Western",
     type: "MFT",
@@ -165,7 +200,7 @@ function FitBadge({ score }: { score: number | null }) {
 /* ── Page ── */
 
 export default function OutputsPage() {
-  const [selectedId, setSelectedId] = useState<string>("jasper-harness-glean-v2");
+  const [selectedId, setSelectedId] = useState<string>("consolidated");
 
   const current = campaigns.find((c) => c.id === selectedId)!;
   const qualified = current.accounts.filter((a) => a.status === "qualified");
