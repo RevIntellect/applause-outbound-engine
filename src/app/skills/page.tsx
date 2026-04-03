@@ -385,7 +385,7 @@ Always load references/success-stories.md alongside any product module.
 2. One idea per touch. One capability, one CTA, one reason to respond.
 3. Multi-channel pressure. Email opens the door, phone creates urgency, LinkedIn builds familiarity.
 4. Low-friction CTAs. Email 1 never asks for a meeting.
-5. Mobile readability. Every email must pass the phone test.
+5. Mobile readability. Every email must pass the phone test. Each sentence block gets a blank line between it and the next for visual spacing.
 
 ## The 5-Sentence Framework
 
@@ -398,21 +398,52 @@ Every email scannable in under 11 seconds. Each sentence has one job.
 | Sentence 5 | Conversion | Interest-based CTA |
 | Whitespace | The Hook | Line breaks hide body in preview pane |
 
-1. The Observation: Hyper-relevant fact from positive signals (hiring, funding, launches). Never "I" or "We." Never negative events.
+1. The Observation: Hyper-relevant fact from positive signals. Never "I" or "We." Never negative events.
 2. The Problem: Connect observation to a role-specific pain point.
-3. The Credibility: One sentence on how Applause helped a similar company. No named customers without approval.
+3. The Credibility: One sentence on how Applause helped a similar company.
 4. The Solution: Brief operational "how" without pitching.
 5. The CTA: Interest-based question, not a meeting request.
 
 ## Email Rules
 
-- Under 100 words. 4-6 sentences, 8-10 words each.
+- 40 to 100 words per email. 4-6 sentences, 8-10 words each.
+- Lines: 50-75 characters (80 max).
 - No em dashes. Period, comma, or rewrite.
 - Email 1 never asks for a meeting.
-- Subject lines: 1-4 words, ~45 chars, lowercase, curiosity-driven.
+- Subject lines: 1-4 words, lowercase, curiosity-driven.
 - HTML: \`<div>\` tags with \`<br /><br />\`. No \`<p>\` tags.
-- No name after sign-off. SalesLoft appends signature.
-- 2-3 variants per email step using different angles (Industry Trend, Peer, Growth, Trigger, Contrarian).
+- No name after sign-off. "Best," stands alone. SalesLoft appends signature.
+- 2-3 variants per email step using different angles.
+
+## Stage 3 Integration: Auto-Read Lead List
+
+When running inside the pipeline, read Stage 3 output and parse the Personalization Block for every contact:
+
+| Block Field | What It Provides |
+|:------------|:-----------------|
+| Contact Name, Title, Company | SalesLoft variables and tone calibration |
+| Score + Role Classification | Cadence structure selection |
+| Cadence Type | Pre-assigned from Stage 3. Do not override. |
+| Applause Capability Match | Product module selection |
+| Trigger Signals | Sentence 1 (Observation). Each trigger feeds a variant. |
+| Pain Points | Sentence 2 (Problem/Insight). Role-specific. |
+| Company Initiatives | Context for Sentences 1-2. |
+| Insider Vocabulary | Word choice across all channels. |
+| Success Story Match | Sentence 3 (Credibility). Pre-matched proof. |
+
+If a personalization block is missing, stop and flag it. Do not generate from summary tables alone.
+
+### Personalization Field Mapping
+
+| Email Element | Primary Source |
+|:-------------|:--------------|
+| Sentence 1 | Trigger Signals + Company Initiatives |
+| Sentence 2 | Pain Points (use Insider Vocabulary) |
+| Sentence 3 | Success Story Match |
+| Sentence 4 | Product Module core positioning |
+| Sentence 5 | Product Module CTA variations |
+| Subject line | Insider Vocabulary + Trigger Signals |
+| Tone | Role Classification |
 
 ## Phone Rules
 
@@ -448,7 +479,20 @@ Separate cadences per persona. Never combine personas into one cadence.
 
 ## QA Checklist
 
-Every email verified against: word count, CTA type, no em dashes, no negative triggers, variant differentiation, phone/email alignment, LinkedIn sequence order, product module applied.`,
+- [ ] Product module loaded and positioning applied
+- [ ] 40 to 100 words per email (4-6 sentences, 8-10 words, 50-75 chars/line)
+- [ ] No em dashes, no exclamation marks, no name after sign-off
+- [ ] No references to negative events about the prospect
+- [ ] Does not start with "I" or "We"
+- [ ] No meeting ask in Email 1
+- [ ] Each variant uses a genuinely different angle
+- [ ] Personalization block consumed for every contact
+- [ ] Sentence 1 uses trigger signal from personalization block
+- [ ] Sentence 2 uses role-specific pain from personalization block
+- [ ] Sentence 3 uses pre-matched success story
+- [ ] Insider vocabulary used in word choice
+- [ ] Phone talk track references trigger signal or company initiative
+- [ ] LinkedIn connection request references company initiative`,
   },
 ];
 
