@@ -92,7 +92,7 @@ const campaigns: Campaign[] = [
     touches: 62,
     summary:
       "Studio adoption stalled at 8%, 250 games monthly at device risk, regulatory remediation mode, overlay breakage after game updates, cross-platform fairness for esports, and preview-reality gaps.",
-    embedUrl: null,
+    embedUrl: "https://docs.google.com/document/d/e/2PACX-1vROTL1JZLkrQqKGv2SkwPzeqbor-JWHiMRiZJT58THYj0hGd7Tox0UG1tb6hcPiE7DnKCJRpR5_ANWj/pub?embedded=true",
   },
   {
     id: "jasper-harness-glean-v2",
