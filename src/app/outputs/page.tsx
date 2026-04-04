@@ -2,9 +2,39 @@
 
 import { useState } from "react";
 import { accounts, campaigns } from "@/lib/outputs-data";
-import type { AccountDetail, TouchPoint } from "@/lib/outputs-types";
+import type {
+  AccountDetail,
+  Contact,
+  TouchPoint,
+  StageData,
+  ForensicContent,
+} from "@/lib/outputs-types";
 
-/* ── Badges ── */
+/* ── Style constants matching Process Overview ── */
+
+const stageColors: Record<string, string> = {
+  forensic: "#7c6bc4",
+  icp: "#2db87e",
+  leads: "#4a90d9",
+  deployment: "#d4843e",
+  feedback: "#c94e7c",
+};
+
+const stageLabels: Record<string, { label: string; icon: string }> = {
+  forensic: { label: "Forensic B2B Analysis", icon: "search" },
+  icp: { label: "Strategic ICP Profile", icon: "person_search" },
+  leads: { label: "Lead Research", icon: "leaderboard" },
+  deployment: { label: "SalesLoft Deployment", icon: "rocket_launch" },
+  feedback: { label: "Feedback Loop", icon: "loop" },
+};
+
+const channelConfig: Record<string, { icon: string; color: string }> = {
+  Email: { icon: "mail", color: "#4a90d9" },
+  Phone: { icon: "call", color: "#d4843e" },
+  LinkedIn: { icon: "person", color: "#2db87e" },
+};
+
+/* ── Utility badges ── */
 
 function TypeBadge({ type }: { type: string }) {
   const isA11y = type === "Accessibility";
@@ -17,21 +47,6 @@ function TypeBadge({ type }: { type: string }) {
       }}
     >
       {type}
-    </span>
-  );
-}
-
-function FitBadge({ score }: { score: string }) {
-  const num = parseInt(score);
-  if (isNaN(num)) return <span className="text-[0.625rem] text-outline">DQ</span>;
-  const color = num >= 85 ? "#1a7a4e" : num >= 75 ? "#d4843e" : "#727782";
-  const bg = num >= 85 ? "#2db87e20" : num >= 75 ? "#d4843e20" : "#72778220";
-  return (
-    <span
-      className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded"
-      style={{ backgroundColor: bg, color }}
-    >
-      {score}
     </span>
   );
 }
@@ -55,16 +70,16 @@ function PriorityBadge({ priority }: { priority: string }) {
 }
 
 function CadenceBadge({ type }: { type: string }) {
-  const config: Record<string, { color: string }> = {
-    Extended: { color: "#7c6bc4" },
-    Standard: { color: "#4a90d9" },
-    Compact: { color: "#2db87e" },
+  const colors: Record<string, string> = {
+    Extended: "#7c6bc4",
+    Standard: "#4a90d9",
+    Compact: "#2db87e",
   };
-  const c = config[type] || config.Standard;
+  const c = colors[type] || "#4a90d9";
   return (
     <span
       className="text-[0.625rem] font-semibold px-1.5 py-0.5 rounded"
-      style={{ backgroundColor: `${c.color}20`, color: c.color }}
+      style={{ backgroundColor: `${c}20`, color: c }}
     >
       {type}
     </span>
@@ -73,126 +88,385 @@ function CadenceBadge({ type }: { type: string }) {
 
 /* ── Copy button ── */
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, label }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
       type="button"
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}
-      className="flex items-center gap-1 px-2 py-1 rounded text-[0.6875rem] font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors"
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[0.6875rem] font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors shrink-0"
     >
-      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+      <span className="material-symbols-outlined" style={{ fontSize: 13 }}>
         {copied ? "check" : "content_copy"}
       </span>
-      {copied ? "Copied" : "Copy"}
+      {copied ? "Copied" : label || "Copy"}
     </button>
   );
 }
 
-/* ── Touchpoint row ── */
+/* ── Variant tabs ── */
 
-const channelIcon: Record<string, { icon: string; color: string }> = {
-  Email: { icon: "mail", color: "#4a90d9" },
-  Phone: { icon: "call", color: "#d4843e" },
-  LinkedIn: { icon: "person", color: "#2db87e" },
-};
-
-function TouchpointRow({ touch }: { touch: TouchPoint }) {
-  const [expanded, setExpanded] = useState(false);
-  const ch = channelIcon[touch.channel] || { icon: "task", color: "#666" };
-  const hasContent =
-    touch.content || (touch.variants && touch.variants.length > 0);
+function VariantTabs({
+  variants,
+}: {
+  variants: { label: string; subject: string; content: string }[];
+}) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const active = variants[activeIdx];
 
   return (
-    <div className="border-b border-outline-variant/10 last:border-0">
-      <button
-        type="button"
-        onClick={() => hasContent && setExpanded(!expanded)}
-        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
-          hasContent
-            ? "hover:bg-surface-container-low cursor-pointer"
-            : "cursor-default"
-        }`}
-      >
-        <span className="text-xs font-bold text-on-surface-variant w-10 shrink-0">
-          Day {touch.day}
-        </span>
-        <span
-          className="material-symbols-outlined shrink-0"
-          style={{ fontSize: 16, color: ch.color }}
-        >
-          {ch.icon}
-        </span>
-        <span className="text-sm text-on-surface flex-1">
-          <span className="font-medium">{touch.channel}</span>
-          <span className="text-on-surface-variant ml-1.5">{touch.action}</span>
-        </span>
-        {hasContent && (
-          <span
-            className="material-symbols-outlined text-outline transition-transform"
-            style={{
-              fontSize: 16,
-              transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
-            }}
-          >
-            chevron_right
+    <div>
+      {variants.length > 1 && (
+        <div className="flex gap-1 mb-2">
+          {variants.map((v, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setActiveIdx(i)}
+              className={`px-2.5 py-1 rounded text-[0.6875rem] font-medium transition-colors ${
+                activeIdx === i
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+              }`}
+            >
+              {v.label.replace(/^Variant\s/, "")}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="bg-inverse-surface rounded-lg p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[0.6875rem] font-semibold text-inverse-on-surface/60 uppercase tracking-wide">
+            {active.label}
           </span>
+          <CopyButton text={active.content} />
+        </div>
+        {active.subject && (
+          <div className="text-xs text-inverse-on-surface/50 mb-2">
+            Subject:{" "}
+            <span className="text-inverse-on-surface/80">{active.subject}</span>
+          </div>
         )}
-      </button>
-      {expanded && hasContent && (
-        <div className="px-4 pb-4 space-y-3">
-          {touch.variants?.map((v, vi) => (
-            <div key={vi} className="bg-inverse-surface rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[0.6875rem] font-semibold text-inverse-on-surface/60 uppercase tracking-wide">
-                  {v.label}
+        <pre className="text-[0.8125rem] text-inverse-on-surface/90 leading-relaxed font-mono whitespace-pre-wrap">
+          {active.content}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+/* ── Cadence table ── */
+
+function CadenceTable({ contact, color }: { contact: Contact; color: string }) {
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
+
+  if (contact.touches.length === 0) {
+    return (
+      <div className="text-xs text-on-surface-variant italic px-3 py-4 text-center">
+        Cadence content pending. Full touchpoints will appear here once populated.
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-outline-variant/15">
+      {/* Table header */}
+      <div className="grid grid-cols-[56px_80px_1fr] gap-0 bg-surface-container px-3 py-2">
+        <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+          Day
+        </span>
+        <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+          Channel
+        </span>
+        <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+          Content
+        </span>
+      </div>
+
+      {/* Table rows */}
+      {contact.touches.map((touch, ti) => {
+        const ch = channelConfig[touch.channel] || {
+          icon: "task",
+          color: "#666",
+        };
+        const hasContent =
+          touch.content || (touch.variants && touch.variants.length > 0);
+        const isExpanded = expandedRow === ti;
+
+        return (
+          <div
+            key={ti}
+            className="border-t border-outline-variant/10"
+          >
+            <button
+              type="button"
+              onClick={() =>
+                hasContent && setExpandedRow(isExpanded ? null : ti)
+              }
+              className={`w-full grid grid-cols-[56px_80px_1fr] gap-0 px-3 py-2.5 text-left transition-colors ${
+                hasContent
+                  ? "hover:bg-surface-container-low cursor-pointer"
+                  : "cursor-default"
+              } ${isExpanded ? "bg-surface-container-low" : ""}`}
+            >
+              {/* Day */}
+              <span className="text-xs font-bold text-on-surface-variant">
+                Day {touch.day}
+              </span>
+
+              {/* Channel */}
+              <span className="flex items-center gap-1.5">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 14, color: ch.color }}
+                >
+                  {ch.icon}
                 </span>
-                <CopyButton text={v.content} />
-              </div>
-              {v.subject && (
-                <div className="text-xs text-inverse-on-surface/50 mb-2">
-                  Subject:{" "}
-                  <span className="text-inverse-on-surface/80">
-                    {v.subject}
+                <span
+                  className="text-xs font-medium"
+                  style={{ color: ch.color }}
+                >
+                  {touch.channel}
+                </span>
+              </span>
+
+              {/* Action + subject preview */}
+              <span className="flex items-center justify-between gap-2">
+                <span className="text-sm text-on-surface">
+                  {touch.action}
+                  {touch.variants?.[0]?.subject && (
+                    <span className="text-on-surface-variant ml-1.5">
+                      / {touch.variants[0].subject}
+                    </span>
+                  )}
+                </span>
+                {hasContent && (
+                  <span
+                    className="material-symbols-outlined text-outline shrink-0 transition-transform"
+                    style={{
+                      fontSize: 16,
+                      transform: isExpanded
+                        ? "rotate(180deg)"
+                        : "rotate(0deg)",
+                    }}
+                  >
+                    expand_more
                   </span>
+                )}
+              </span>
+            </button>
+
+            {/* Expanded content */}
+            {isExpanded && hasContent && (
+              <div className="px-3 pb-3 pt-1">
+                {touch.variants && touch.variants.length > 0 ? (
+                  <VariantTabs variants={touch.variants} />
+                ) : touch.content ? (
+                  <div className="bg-inverse-surface rounded-lg p-4">
+                    <div className="flex justify-end mb-2">
+                      <CopyButton text={touch.content} />
+                    </div>
+                    <pre className="text-[0.8125rem] text-inverse-on-surface/90 leading-relaxed font-mono whitespace-pre-wrap">
+                      {touch.content}
+                    </pre>
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Structured stage content renderer ── */
+
+function StructuredStageContent({
+  data,
+  color,
+}: {
+  data: StageData;
+  color: string;
+}) {
+  const f = data.forensic;
+
+  return (
+    <div className="space-y-5">
+      {/* Summary */}
+      <p className="text-sm text-on-surface leading-relaxed">{data.summary}</p>
+
+      {/* Company Stats */}
+      {f?.companyStats && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {f.companyStats.founded && (
+            <StatChip label="Founded" value={f.companyStats.founded} />
+          )}
+          {f.companyStats.valuation && (
+            <StatChip label="Valuation" value={f.companyStats.valuation} />
+          )}
+          {f.companyStats.arr && (
+            <StatChip label="ARR" value={f.companyStats.arr} />
+          )}
+          {f.companyStats.employees && (
+            <StatChip label="Employees" value={f.companyStats.employees} />
+          )}
+          {f.companyStats.funding && (
+            <StatChip label="Funding" value={f.companyStats.funding} />
+          )}
+          {f.companyStats.hq && (
+            <StatChip label="HQ" value={f.companyStats.hq} />
+          )}
+          {f.companyStats.extra?.map((e) => (
+            <StatChip key={e.label} label={e.label} value={e.value} />
+          ))}
+        </div>
+      )}
+
+      {/* Reality Snapshot */}
+      {f?.realitySnapshot && (
+        <div className="bg-surface-container rounded-lg p-4 space-y-3">
+          <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wide" style={{ color }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>target</span>
+            Reality Snapshot
+          </div>
+          <div className="space-y-2.5">
+            <div>
+              <span className="text-[0.625rem] font-bold text-on-surface-variant uppercase tracking-wide">Trigger Event</span>
+              <p className="text-sm text-on-surface leading-relaxed mt-0.5">{f.realitySnapshot.triggerEvent}</p>
+            </div>
+            <div>
+              <span className="text-[0.625rem] font-bold text-on-surface-variant uppercase tracking-wide">Bleeding Neck</span>
+              <p className="text-sm text-on-surface leading-relaxed mt-0.5">{f.realitySnapshot.bleedingNeck}</p>
+            </div>
+            <div>
+              <span className="text-[0.625rem] font-bold text-on-surface-variant uppercase tracking-wide">The Enemy</span>
+              <p className="text-sm text-on-surface leading-relaxed mt-0.5">{f.realitySnapshot.enemy}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Psychological Architecture */}
+      {f?.psychologicalArchitecture && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="bg-surface-container rounded-lg p-4">
+            <span className="text-[0.625rem] font-bold uppercase tracking-wide" style={{ color: "#d4843e" }}>Silent Objection</span>
+            <p className="text-sm text-on-surface leading-relaxed mt-1">{f.psychologicalArchitecture.silentObjection}</p>
+          </div>
+          <div className="bg-surface-container rounded-lg p-4">
+            <span className="text-[0.625rem] font-bold uppercase tracking-wide" style={{ color: "#2db87e" }}>Green Light</span>
+            <p className="text-sm text-on-surface leading-relaxed mt-1">{f.psychologicalArchitecture.greenLight}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Insider Vocabulary */}
+      {f?.insiderVocabulary && f.insiderVocabulary.length > 0 && (
+        <div>
+          <span className="text-[0.625rem] font-bold text-on-surface-variant uppercase tracking-wide">Insider Vocabulary</span>
+          <div className="flex flex-wrap gap-1.5 mt-1.5">
+            {f.insiderVocabulary.map((term) => (
+              <span
+                key={term}
+                className="text-[0.6875rem] px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant"
+              >
+                {term}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Strategic Entry Points */}
+      {f?.strategicEntryPoints && f.strategicEntryPoints.length > 0 && (
+        <div>
+          <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wide mb-2" style={{ color }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>strategy</span>
+            Strategic Entry Points
+          </div>
+          <div className="space-y-2">
+            {f.strategicEntryPoints.map((ep, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-white font-bold text-[0.5rem] shrink-0 mt-0.5"
+                  style={{ backgroundColor: color }}
+                >
+                  {i + 1}
                 </div>
-              )}
-              <pre className="text-[0.8125rem] text-inverse-on-surface/90 leading-relaxed font-mono whitespace-pre-wrap">
-                {v.content}
-              </pre>
+                <div>
+                  <span className="text-xs font-semibold text-on-surface">{ep.angle}</span>
+                  <p className="text-sm text-on-surface-variant leading-relaxed mt-0.5">{ep.opener}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Evidence Table */}
+      {f?.evidenceTable && f.evidenceTable.length > 0 && (
+        <div className="overflow-hidden rounded-lg border border-outline-variant/15">
+          <div className="grid grid-cols-[200px_1fr] gap-0 bg-surface-container px-3 py-2">
+            <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">Signal</span>
+            <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">Detail</span>
+          </div>
+          {f.evidenceTable.map((row, i) => (
+            <div key={i} className="grid grid-cols-[200px_1fr] gap-0 px-3 py-2 border-t border-outline-variant/10">
+              <span className="text-xs font-medium text-on-surface">{row.signal}</span>
+              <span className="text-xs text-on-surface-variant">{row.detail}</span>
             </div>
           ))}
-          {touch.content && !touch.variants && (
-            <div className="bg-inverse-surface rounded-lg p-4">
-              <div className="flex justify-end mb-2">
-                <CopyButton text={touch.content} />
+        </div>
+      )}
+
+      {/* Persona Cards */}
+      {data.personas && data.personas.length > 0 && (
+        <div>
+          <div className="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wide mb-2" style={{ color }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>person_search</span>
+            Persona Cards
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {data.personas.map((p) => (
+              <div key={p.name} className="bg-surface-container rounded-lg p-3.5">
+                <div className="text-sm font-semibold text-on-surface">{p.name}</div>
+                <div className="text-[0.6875rem] text-on-surface-variant mb-2">{p.title}</div>
+                <div className="text-xs text-on-surface leading-relaxed">{p.forensicHook}</div>
+                {p.whyNow && (
+                  <div className="mt-1.5 text-[0.6875rem] text-on-surface-variant">
+                    <span className="font-semibold">Why now:</span> {p.whyNow}
+                  </div>
+                )}
+                {p.silentObjection && (
+                  <div className="mt-1 text-[0.6875rem] text-on-surface-variant">
+                    <span className="font-semibold" style={{ color: "#d4843e" }}>Objection:</span> {p.silentObjection}
+                  </div>
+                )}
               </div>
-              <pre className="text-[0.8125rem] text-inverse-on-surface/90 leading-relaxed font-mono whitespace-pre-wrap">
-                {touch.content}
-              </pre>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-/* ── Stage labels ── */
+function StatChip({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-surface-container rounded-lg px-3 py-2">
+      <div className="text-[0.5625rem] font-semibold text-on-surface-variant uppercase tracking-wide">{label}</div>
+      <div className="text-sm font-medium text-on-surface mt-0.5">{value}</div>
+    </div>
+  );
+}
 
-const stageLabels: Record<string, { label: string; icon: string }> = {
-  forensic: { label: "Forensic B2B Analysis", icon: "search" },
-  icp: { label: "Strategic ICP Profile", icon: "person_search" },
-  leads: { label: "Lead Research", icon: "people" },
-  deployment: { label: "SalesLoft Deployment", icon: "rocket_launch" },
-  feedback: { label: "Feedback Loop", icon: "loop" },
-};
-
-/* ── Account detail panel ── */
+/* ── Account panel ── */
 
 function AccountPanel({
   account,
@@ -204,49 +478,71 @@ function AccountPanel({
   onToggle: () => void;
 }) {
   const [selectedContactIdx, setSelectedContactIdx] = useState(0);
-  const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>({});
-  const selectedContact = account.contacts[selectedContactIdx];
+  const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>(
+    {}
+  );
+  const selectedContact = account.contacts[selectedContactIdx] || null;
+  const totalTouches = account.contacts.reduce(
+    (sum, c) => sum + c.touches.length,
+    0
+  );
 
   const toggleStage = (key: string) =>
     setExpandedStages((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
-    <div className="border border-outline-variant/15 rounded-lg overflow-hidden">
-      {/* Account Header */}
+    <div className="bg-surface-container-lowest rounded-xl shadow-ghost overflow-hidden">
+      {/* Account tile header */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low transition-colors"
+        className={`w-full flex items-center gap-3 px-5 py-4 transition-colors text-left ${
+          isOpen ? "" : "hover:bg-surface-container-low/30"
+        }`}
+        style={isOpen ? { borderBottom: `3px solid ${account.color}` } : {}}
       >
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0"
+          className="w-9 h-9 rounded-lg flex items-center justify-center text-white shrink-0"
           style={{
             backgroundColor:
               account.priority === "SKIP" ? "#727782" : account.color,
           }}
         >
-          <span
-            className="material-symbols-outlined"
-            style={{ fontSize: 16 }}
-          >
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
             {account.priority === "SKIP" ? "block" : "domain"}
           </span>
         </div>
-        <div className="flex-1 min-w-0 text-left">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-on-surface">
               {account.company}
             </span>
             <PriorityBadge priority={account.priority} />
           </div>
-          <p className="text-[0.6875rem] text-on-surface-variant truncate">
-            {account.description}
+          <p className="text-[0.6875rem] text-on-surface-variant truncate mt-0.5">
+            {account.rep && account.rep !== "TBD" ? account.rep + " · " : ""}
+            {account.contacts.length} contacts
+            {totalTouches > 0 ? ` · ${totalTouches} touches` : ""}
           </p>
         </div>
-        <FitBadge score={account.fitScore} />
+        <div className="text-right shrink-0">
+          <div
+            className="text-lg font-bold"
+            style={{
+              color:
+                parseInt(account.fitScore) >= 85
+                  ? "#1a7a4e"
+                  : parseInt(account.fitScore) >= 75
+                  ? "#d4843e"
+                  : "#727782",
+            }}
+          >
+            {account.fitScore}
+          </div>
+        </div>
         <span
-          className="material-symbols-outlined text-on-surface-variant transition-transform"
+          className="material-symbols-outlined text-on-surface-variant transition-transform shrink-0"
           style={{
-            fontSize: 18,
+            fontSize: 20,
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
           }}
         >
@@ -255,151 +551,189 @@ function AccountPanel({
       </button>
 
       {isOpen && (
-        <div className="px-4 pb-4 space-y-4">
-          {/* Description */}
-          <div className="bg-surface-container rounded-lg px-3 py-2.5">
-            <p className="text-sm text-on-surface leading-relaxed">
-              {account.description}
-            </p>
-            {account.rep && account.rep !== "TBD" && (
-              <p className="text-[0.6875rem] text-on-surface-variant mt-1">
-                Rep: {account.rep}
-              </p>
-            )}
-          </div>
+        <div className="px-5 py-5 space-y-6">
+          {/* Account summary */}
+          <p className="text-sm text-on-surface-variant leading-relaxed">
+            {account.description}
+          </p>
 
-          {/* Pipeline Stage Sections */}
-          {account.stages &&
-            Object.entries(account.stages).map(([key, content]) => {
-              if (!content) return null;
-              const stage = stageLabels[key];
-              const stageKey = `${account.id}-${key}`;
-              const isStageOpen = expandedStages[stageKey];
-
-              return (
-                <div
-                  key={stageKey}
-                  className="bg-surface-container rounded-lg overflow-hidden"
-                >
-                  <button
-                    onClick={() => toggleStage(stageKey)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-surface-container-low/50 transition-colors"
-                  >
-                    <span
-                      className="material-symbols-outlined text-primary"
-                      style={{ fontSize: 16 }}
-                    >
-                      {stage?.icon || "info"}
-                    </span>
-                    <span className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide flex-1 text-left">
-                      {stage?.label || key}
-                    </span>
-                    <span
-                      className="material-symbols-outlined text-on-surface-variant transition-transform"
-                      style={{
-                        fontSize: 16,
-                        transform: isStageOpen
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
-                      }}
-                    >
-                      expand_more
-                    </span>
-                  </button>
-                  {isStageOpen && (
-                    <div className="px-3 pb-2.5">
-                      <div className="bg-surface-container-lowest rounded-md px-3 py-2">
-                        <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
-                          {content}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-          {/* Contacts */}
+          {/* ── LEADS TABLE (first) ── */}
           {account.contacts.length > 0 && (
-            <div>
-              <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
-                Contacts ({account.contacts.length})
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <span
+                  className="material-symbols-outlined text-primary"
+                  style={{ fontSize: 18 }}
+                >
+                  people
+                </span>
+                <h3 className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                  Leads ({account.contacts.length})
+                </h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+              <div className="overflow-hidden rounded-lg border border-outline-variant/15">
+                {/* Header */}
+                <div className="grid grid-cols-[1fr_1fr_56px_90px_80px] gap-0 bg-surface-container px-3 py-2">
+                  <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    Name
+                  </span>
+                  <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    Title
+                  </span>
+                  <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    Score
+                  </span>
+                  <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    Role
+                  </span>
+                  <span className="text-[0.625rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    Cadence
+                  </span>
+                </div>
+                {/* Rows */}
                 {account.contacts.map((contact, idx) => (
                   <button
                     key={contact.name}
                     type="button"
                     onClick={() => setSelectedContactIdx(idx)}
-                    className={`text-left p-3 rounded-lg transition-all ${
+                    className={`w-full grid grid-cols-[1fr_1fr_56px_90px_80px] gap-0 px-3 py-2.5 text-left border-t border-outline-variant/10 transition-colors ${
                       selectedContactIdx === idx
-                        ? "bg-surface-container-high shadow-lift"
-                        : "bg-surface-container shadow-ghost hover:shadow-lift"
+                        ? "bg-primary/5"
+                        : "hover:bg-surface-container-low"
                     }`}
                   >
-                    <div className="flex items-start justify-between mb-1">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-on-surface">
-                          {contact.apolloRequired && (
-                            <span className="inline-flex items-center gap-0.5 text-[0.6rem] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded mr-1.5 align-middle">
-                              <span
-                                className="material-symbols-outlined"
-                                style={{ fontSize: 10 }}
-                              >
-                                search
-                              </span>
-                              APOLLO
-                            </span>
-                          )}
-                          {contact.name}
-                        </p>
-                        <p className="text-xs text-on-surface-variant">
-                          {contact.title}
-                        </p>
-                      </div>
-                      <span
-                        className="text-base font-bold shrink-0"
-                        style={{ color: account.color }}
-                      >
-                        {contact.score}
-                      </span>
-                    </div>
-                    {contact.capability && (
-                      <p className="text-[0.625rem] text-on-surface-variant leading-snug mb-1">
-                        {contact.capability}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-on-surface flex items-center gap-1.5">
+                      {contact.apolloRequired && (
+                        <span className="inline-flex items-center text-[0.5rem] font-bold text-amber-600 bg-amber-100 px-1 py-0.5 rounded">
+                          APOLLO
+                        </span>
+                      )}
+                      {contact.name}
+                    </span>
+                    <span className="text-xs text-on-surface-variant self-center">
+                      {contact.title}
+                    </span>
+                    <span
+                      className="text-sm font-bold self-center"
+                      style={{ color: account.color }}
+                    >
+                      {contact.score}
+                    </span>
+                    <span className="text-[0.625rem] text-on-surface-variant self-center">
+                      {contact.roleClass}
+                    </span>
+                    <span className="self-center">
                       <CadenceBadge type={contact.cadenceType} />
-                      <span className="text-[0.625rem] text-outline">
-                        {contact.roleClass}
-                      </span>
-                    </div>
+                    </span>
                   </button>
                 ))}
               </div>
-
-              {/* Selected contact cadence */}
-              {selectedContact && selectedContact.touches.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
-                      Cadence: {selectedContact.name}
-                    </span>
-                    <CadenceBadge type={selectedContact.cadenceType} />
-                    <span className="text-[0.625rem] text-outline">
-                      {selectedContact.touches.length} touches
-                    </span>
-                  </div>
-                  <div className="bg-surface-container-low rounded-lg overflow-hidden">
-                    {selectedContact.touches.map((touch, ti) => (
-                      <TouchpointRow key={ti} touch={touch} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            </section>
           )}
+
+          {/* ── CADENCE TABLE for selected contact ── */}
+          {selectedContact && (
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18, color: account.color }}
+                >
+                  route
+                </span>
+                <h3 className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                  Cadence: {selectedContact.name}
+                </h3>
+                <CadenceBadge type={selectedContact.cadenceType} />
+                {selectedContact.touches.length > 0 && (
+                  <span className="text-[0.625rem] text-outline">
+                    {selectedContact.touches.length} touches
+                  </span>
+                )}
+              </div>
+              <CadenceTable contact={selectedContact} color={account.color} />
+            </section>
+          )}
+
+          {/* ── PIPELINE STAGES (color-coded expandable frames) ── */}
+          {account.stages &&
+            Object.keys(account.stages).length > 0 && (
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <span
+                    className="material-symbols-outlined text-primary"
+                    style={{ fontSize: 18 }}
+                  >
+                    auto_awesome
+                  </span>
+                  <h3 className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                    Pipeline Stages
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {Object.entries(account.stages).map(([key, content]) => {
+                    if (!content) return null;
+                    const stage = stageLabels[key];
+                    const color = stageColors[key] || "#4a90d9";
+                    const stageKey = `${account.id}-${key}`;
+                    const isStageOpen = expandedStages[stageKey];
+                    const isStructured = typeof content === "object";
+
+                    return (
+                      <div
+                        key={stageKey}
+                        className={`bg-surface-container-lowest rounded-xl shadow-ghost overflow-hidden transition-all ${
+                          isStageOpen ? "border-l-4" : ""
+                        }`}
+                        style={isStageOpen ? { borderLeftColor: color } : {}}
+                      >
+                        <button
+                          onClick={() => toggleStage(stageKey)}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low/30 transition-colors"
+                        >
+                          <div
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-white shrink-0"
+                            style={{ backgroundColor: color }}
+                          >
+                            <span
+                              className="material-symbols-outlined"
+                              style={{ fontSize: 14 }}
+                            >
+                              {stage?.icon || "info"}
+                            </span>
+                          </div>
+                          <span className="text-sm font-medium text-on-surface flex-1 text-left">
+                            {stage?.label || key}
+                          </span>
+                          <span
+                            className="material-symbols-outlined text-on-surface-variant transition-transform"
+                            style={{
+                              fontSize: 18,
+                              transform: isStageOpen
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                            }}
+                          >
+                            expand_more
+                          </span>
+                        </button>
+                        {isStageOpen && (
+                          <div className="px-4 pb-4 pl-[calc(1rem+28px+0.75rem)]">
+                            {isStructured ? (
+                              <StructuredStageContent data={content as StageData} color={color} />
+                            ) : (
+                              <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
+                                {content as string}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
         </div>
       )}
     </div>
@@ -435,7 +769,8 @@ export default function OutputsPage() {
         </h1>
         <p className="text-on-surface-variant text-sm mt-1 max-w-[640px] leading-relaxed">
           {campaigns.length} campaigns, 23 accounts, 90+ contacts. Select a
-          campaign to view per-account reports.
+          campaign, then click an account to view leads, cadences, and pipeline
+          output.
         </p>
       </div>
 
@@ -443,10 +778,10 @@ export default function OutputsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {campaigns.map((c) => {
           const isSelected = selectedCampaignId === c.id;
-          const qualified = c.accountIds.filter((id) => {
+          const qualifiedCount = c.accountIds.filter((id) => {
             const a = accounts.find((acc) => acc.id === id);
             return a && a.priority !== "SKIP";
-          });
+          }).length;
 
           return (
             <button
@@ -456,9 +791,17 @@ export default function OutputsPage() {
               }
               className={`relative text-left px-5 py-4 rounded-xl transition-all ${
                 isSelected
-                  ? "bg-surface-container-lowest shadow-lift ring-2 ring-primary"
+                  ? "shadow-lift ring-2 scale-[1.02]"
                   : "bg-surface-container-lowest shadow-ghost hover:shadow-lift"
               }`}
+              style={
+                isSelected
+                  ? {
+                      outline: `2px solid ${c.color}`,
+                      background: `${c.color}08`,
+                    }
+                  : {}
+              }
             >
               {isSelected && (
                 <div
@@ -476,7 +819,7 @@ export default function OutputsPage() {
                 {c.date}
               </p>
               <div className="flex gap-3 text-[0.625rem] text-on-surface-variant">
-                <span>{qualified.length} accounts</span>
+                <span>{qualifiedCount} accounts</span>
                 <span>{c.contacts} contacts</span>
                 <span>{c.touches} touches</span>
               </div>
@@ -487,166 +830,78 @@ export default function OutputsPage() {
 
       {/* Expanded Campaign */}
       {activeCampaign && (
-        <div className="bg-surface-container-lowest rounded-xl shadow-lift overflow-hidden">
-          {/* Campaign Header */}
+        <section>
+          {/* Campaign header bar */}
           <div
-            className="px-6 py-4 flex items-center gap-4"
-            style={{ borderBottom: `3px solid ${activeCampaign.color}` }}
+            className="bg-surface-container-lowest rounded-xl shadow-ghost p-5 border-l-4 mb-4"
+            style={{ borderLeftColor: activeCampaign.color }}
           >
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
-              style={{ backgroundColor: activeCampaign.color }}
-            >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: 20 }}
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0"
+                style={{ backgroundColor: activeCampaign.color }}
               >
-                {activeCampaign.type === "Accessibility"
-                  ? "accessibility_new"
-                  : "devices"}
-              </span>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18 }}
+                >
+                  {activeCampaign.type === "Accessibility"
+                    ? "accessibility_new"
+                    : "devices"}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-base font-semibold text-on-surface">
+                  {activeCampaign.title}
+                </h2>
+                <p className="text-xs text-on-surface-variant">
+                  {activeCampaign.type} / {activeCampaign.date}
+                </p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-semibold text-on-surface">
-                {activeCampaign.title}
-              </h2>
-              <p className="text-xs text-on-surface-variant">
-                {activeCampaign.type} Campaign / {activeCampaign.date}
-              </p>
+
+            <p className="text-sm text-on-surface-variant leading-relaxed mb-3">
+              {activeCampaign.summary}
+            </p>
+
+            <div className="flex flex-wrap gap-5 mb-3">
+              {[
+                { icon: "domain", val: campaignAccounts.filter((a) => a.priority !== "SKIP").length, label: "accounts" },
+                { icon: "people", val: activeCampaign.contacts, label: "contacts" },
+                { icon: "route", val: activeCampaign.cadences, label: "cadences" },
+                { icon: "touch_app", val: activeCampaign.touches, label: "touches" },
+              ].map((s) => (
+                <div key={s.label} className="flex items-center gap-1.5">
+                  <span
+                    className="material-symbols-outlined text-primary"
+                    style={{ fontSize: 15 }}
+                  >
+                    {s.icon}
+                  </span>
+                  <span className="text-sm font-medium text-on-surface">
+                    {s.val}
+                  </span>
+                  <span className="text-xs text-on-surface-variant">
+                    {s.label}
+                  </span>
+                </div>
+              ))}
             </div>
+
           </div>
 
-          <div className="px-6 py-5 space-y-5">
-            {/* Stats */}
-            <div className="flex flex-wrap gap-5">
-              <div className="flex items-center gap-2">
-                <span
-                  className="material-symbols-outlined text-primary"
-                  style={{ fontSize: 16 }}
-                >
-                  domain
-                </span>
-                <span className="text-sm text-on-surface font-medium">
-                  {campaignAccounts.filter((a) => a.priority !== "SKIP").length}
-                </span>
-                <span className="text-xs text-on-surface-variant">
-                  accounts
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="material-symbols-outlined text-primary"
-                  style={{ fontSize: 16 }}
-                >
-                  people
-                </span>
-                <span className="text-sm text-on-surface font-medium">
-                  {activeCampaign.contacts}
-                </span>
-                <span className="text-xs text-on-surface-variant">
-                  contacts
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="material-symbols-outlined text-primary"
-                  style={{ fontSize: 16 }}
-                >
-                  route
-                </span>
-                <span className="text-sm text-on-surface font-medium">
-                  {activeCampaign.cadences}
-                </span>
-                <span className="text-xs text-on-surface-variant">
-                  cadences
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="material-symbols-outlined text-primary"
-                  style={{ fontSize: 16 }}
-                >
-                  touch_app
-                </span>
-                <span className="text-sm text-on-surface font-medium">
-                  {activeCampaign.touches}
-                </span>
-                <span className="text-xs text-on-surface-variant">
-                  touches
-                </span>
-              </div>
-            </div>
-
-            {/* Summary */}
-            <div className="bg-surface-container rounded-lg px-4 py-3">
-              <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">
-                Campaign Summary
-              </div>
-              <p className="text-sm text-on-surface leading-relaxed">
-                {activeCampaign.summary}
-              </p>
-            </div>
-
-            {/* Per-Account Reports */}
-            <div>
-              <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
-                Account Reports ({campaignAccounts.length})
-              </div>
-              <div className="space-y-2">
-                {campaignAccounts.map((account) => (
-                  <AccountPanel
-                    key={account.id}
-                    account={account}
-                    isOpen={!!openAccountIds[account.id]}
-                    onToggle={() => toggleAccount(account.id)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Google Doc Link */}
-            <div className="border-t border-outline-variant/15 pt-4 flex items-center justify-between">
-              {activeCampaign.docUrl ? (
-                <a
-                  href={activeCampaign.docUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 18 }}
-                  >
-                    description
-                  </span>
-                  View Full Google Doc
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 14 }}
-                  >
-                    open_in_new
-                  </span>
-                </a>
-              ) : (
-                <span className="inline-flex items-center gap-2 text-sm text-on-surface-variant">
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 18 }}
-                  >
-                    description
-                  </span>
-                  Google Doc not yet linked
-                </span>
-              )}
-              <button
-                onClick={() => setSelectedCampaignId(null)}
-                className="text-xs text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                Collapse
-              </button>
-            </div>
+          {/* Account tiles */}
+          <div className="space-y-3">
+            {campaignAccounts.map((account) => (
+              <AccountPanel
+                key={account.id}
+                account={account}
+                isOpen={!!openAccountIds[account.id]}
+                onToggle={() => toggleAccount(account.id)}
+              />
+            ))}
           </div>
-        </div>
+        </section>
       )}
 
       {/* Pipeline Totals */}

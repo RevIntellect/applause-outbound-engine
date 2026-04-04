@@ -20,6 +20,62 @@ export interface Contact {
   touches: TouchPoint[];
 }
 
+/* ── Structured forensic content ── */
+
+export interface CompanyStats {
+  founded?: string;
+  valuation?: string;
+  arr?: string;
+  employees?: string;
+  funding?: string;
+  hq?: string;
+  extra?: { label: string; value: string }[];
+}
+
+export interface RealitySnapshot {
+  triggerEvent: string;
+  bleedingNeck: string;
+  enemy: string;
+}
+
+export interface PsychologicalArchitecture {
+  silentObjection: string;
+  greenLight: string;
+}
+
+export interface StrategicEntryPoint {
+  angle: string;
+  opener: string;
+}
+
+export interface EvidenceItem {
+  signal: string;
+  detail: string;
+}
+
+export interface ForensicContent {
+  companyStats?: CompanyStats;
+  realitySnapshot?: RealitySnapshot;
+  psychologicalArchitecture?: PsychologicalArchitecture;
+  insiderVocabulary?: string[];
+  strategicEntryPoints?: StrategicEntryPoint[];
+  evidenceTable?: EvidenceItem[];
+}
+
+export interface PersonaCard {
+  name: string;
+  title: string;
+  forensicHook: string;
+  whyNow?: string;
+  silentObjection?: string;
+}
+
+export interface StageData {
+  summary: string;
+  forensic?: ForensicContent;
+  personas?: PersonaCard[];
+}
+
 export interface AccountDetail {
   id: string;
   company: string;
@@ -30,11 +86,11 @@ export interface AccountDetail {
   rep: string;
   contacts: Contact[];
   stages?: {
-    forensic?: string;
-    icp?: string;
-    leads?: string;
-    deployment?: string;
-    feedback?: string;
+    forensic?: string | StageData;
+    icp?: string | StageData;
+    leads?: string | StageData;
+    deployment?: string | StageData;
+    feedback?: string | StageData;
   };
 }
 
@@ -49,5 +105,4 @@ export interface Campaign {
   cadences: number;
   touches: number;
   summary: string;
-  docUrl: string | null;
 }

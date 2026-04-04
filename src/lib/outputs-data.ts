@@ -1,4 +1,4 @@
-import { AccountDetail, Campaign } from "./outputs-types";
+import { AccountDetail, Campaign, StageData } from "./outputs-types";
 
 /* ── All account details with contacts and cadences ── */
 
@@ -287,6 +287,62 @@ Best,`,
         ],
       },
     ],
+    stages: {
+      forensic: {
+        summary: "Enterprise AI search platform with 100+ SaaS connectors, browser compatibility gaps across enterprise deployments, and RAG hallucination risk from stale connector data.",
+        forensic: {
+          companyStats: {
+            founded: "2019",
+            valuation: "$4.6B",
+            employees: "800+",
+            funding: "$360M+ (Series D, Sequoia/Kleiner Perkins)",
+            hq: "Palo Alto, CA",
+            extra: [
+              { label: "Connectors", value: "100+ SaaS integrations" },
+              { label: "Customers", value: "500+ enterprise" },
+            ],
+          },
+          realitySnapshot: {
+            triggerEvent: "Enterprise buyers evaluating Glean across their org hit browser compatibility walls. Corporate browser builds (locked-down Chrome, Safari, Firefox ESR) break connector OAuth flows and search rendering that pass internal QA on standard Chrome.",
+            bleedingNeck: "100+ SaaS connectors mean 100+ OAuth flows, token expirations, and API rate limits. When one connector fails silently, Glean's RAG layer serves stale data and users see hallucinated results. Enterprise customers lose trust in search accuracy.",
+            enemy: "Internal QA tests on standard Chrome + Edge. Enterprise customers deploy across Safari, Firefox ESR, locked-down corporate browser builds, and international data centers. The gap between test coverage and real deployment is invisible until a customer reports it.",
+          },
+          psychologicalArchitecture: {
+            silentObjection: "We have automation that covers our connector testing. External testers won't understand our RAG architecture or enterprise deployment models.",
+            greenLight: "When they realize automation validates the happy path but cannot test real OAuth flows across 100+ SaaS environments with actual enterprise browser configurations and network conditions.",
+          },
+          insiderVocabulary: ["RAG", "connector sync", "OAuth flow", "token expiration", "hallucination rate", "retrieval ground truth", "enterprise browser build", "data freshness", "search relevance", "knowledge graph"],
+          strategicEntryPoints: [
+            { angle: "Browser Coverage Gap", opener: "Enterprise customers deploy across Safari, Firefox, and locked-down corporate browser builds. Chrome and Edge focus leaves blind spots when enterprises roll out at scale." },
+            { angle: "Connector Quality at Scale", opener: "100+ SaaS connectors means 100+ OAuth flows, token expirations, and API rate limits to maintain. When one connector fails silently, Glean's RAG layer serves stale data." },
+            { angle: "Enterprise Deployment Confidence", opener: "Enterprise deployments require validation across browsers, networks, and OS configurations your QA team cannot cover in staging alone." },
+          ],
+          evidenceTable: [
+            { signal: "100+ SaaS connectors", detail: "Each connector has unique OAuth, API, and sync patterns requiring real-environment validation" },
+            { signal: "Enterprise browser diversity", detail: "Corporate browser builds, Safari, Firefox ESR not covered in standard Chrome/Edge QA" },
+            { signal: "RAG hallucination risk", detail: "Stale connector data feeds hallucinated search results. Users lose trust." },
+            { signal: "Cherry-pick hotfixes", detail: "Engineering Manager role suggests reactive release cycle, cross-browser validation gaps" },
+            { signal: "R&D operations role", detail: "Dedicated ops function = scaling pain, process bottlenecks in QA coverage" },
+          ],
+        },
+        personas: [
+          { name: "Navaneethakrishnan R", title: "Head of QA", forensicHook: "Owns QA coverage across 100+ connector integrations. Browser diversity in enterprise deployments creates a test matrix automation cannot cover.", whyNow: "Enterprise adoption accelerating, each new customer brings unique browser and network configurations.", silentObjection: "We have comprehensive automation coverage already." },
+          { name: "Sagar Vare", title: "Engineering Manager", forensicHook: "Cherry-pick hotfixes dominating release cycle signal cross-browser validation gaps. Enterprise customers expect consistency across browsers, networks, and OS builds.", whyNow: "Hotfix-driven releases indicate quality gaps in pre-production testing.", silentObjection: "Our engineering team handles this internally." },
+          { name: "Jen Zagofsky", title: "Head of R&D Operations", forensicHook: "R&D operations bottleneck: engineering, product, and design ship continuously but QA coverage across enterprise environments creates drag on release velocity.", whyNow: "Scaling R&D org needs QA coverage that scales without adding permanent headcount.", silentObjection: "We can scale QA internally as we grow." },
+        ],
+      } as StageData,
+      icp: {
+        summary: "Target persona: Head of QA / Engineering Manager / Head of R&D Operations. Pain: browser diversity + connector quality at enterprise scale. Silent objection: external testers won't understand RAG architecture.",
+        personas: [
+          { name: "Head of QA", title: "Technical Buyer", forensicHook: "Connector validation across 100+ SaaS environments with enterprise browser diversity", whyNow: "Enterprise adoption acceleration" },
+          { name: "Engineering Manager", title: "Champion", forensicHook: "Release quality across enterprise browser/OS configurations during rapid shipping", whyNow: "Hotfix-driven release cycle" },
+          { name: "Head of R&D Operations", title: "Champion", forensicHook: "QA coverage scalability without absorbing headcount into R&D org", whyNow: "R&D org scaling" },
+        ],
+      } as StageData,
+      leads: "1. Navaneethakrishnan R, Head of QA (Score: 84, Technical Buyer, Standard cadence)\n2. Sagar Vare, Engineering Manager (Score: 79, Champion, Compact cadence)\n3. Jen Zagofsky, Head of R&D Operations (Score: 77, Champion, Compact cadence)",
+      deployment: "Load cadence JSON via salesloft_batch_import_cadences. Create contacts via salesloft_create_person. Enroll via salesloft_add_person_to_cadence. 3 contacts, 28 total touchpoints across email/phone/LinkedIn.",
+      feedback: "Measure: open rates (40%+ target), reply rates (5%+ target), phone connect rate, LinkedIn acceptance rate, meetings booked. Track connector/browser messaging resonance across variants.",
+    },
   },
   {
     id: "harness",
@@ -551,6 +607,60 @@ Best,`,
         touches: [],
       },
     ],
+    stages: {
+      forensic: {
+        summary: "CI/CD platform with 36 production incidents in 90 days, multi-cloud testing gaps across AWS/Azure/GCP/on-prem, and Selenium-in-Docker limitations that miss real infrastructure behavior.",
+        forensic: {
+          companyStats: {
+            founded: "2017",
+            valuation: "$3.7B",
+            employees: "1,200+",
+            funding: "$425M+ (Series D)",
+            hq: "San Francisco, CA",
+            extra: [
+              { label: "Platform", value: "CI/CD + Feature Flags + Cloud Cost" },
+              { label: "Incidents (90d)", value: "36 production incidents" },
+            ],
+          },
+          realitySnapshot: {
+            triggerEvent: "36 production incidents in 90 days across the Harness platform. Multi-cloud deployments (AWS, Azure, GCP, on-prem) create an exponential test matrix that internal QA cannot cover with Selenium-in-Docker.",
+            bleedingNeck: "Platform customers deploy Harness across multi-cloud environments. Each cloud provider has unique networking, IAM, and infrastructure behavior. Selenium tests in Docker containers validate UI flows but miss real infrastructure interactions, cloud-specific edge cases, and cross-provider inconsistencies.",
+            enemy: "Selenium-in-Docker. It validates the happy path in a controlled container but cannot replicate multi-cloud networking, IAM policies, region-specific latency, or the real infrastructure behavior that causes production incidents.",
+          },
+          psychologicalArchitecture: {
+            silentObjection: "We have Selenium automation running in our CI pipeline. External testing would be redundant and slow down our release velocity.",
+            greenLight: "When they realize 36 incidents in 90 days means their automation is validating synthetic flows while real infrastructure behavior goes untested. The incidents are not automation gaps, they are environment gaps.",
+          },
+          insiderVocabulary: ["multi-cloud", "Selenium-in-Docker", "pipeline execution", "feature flags", "cloud cost management", "GitOps", "infrastructure as code", "deployment verification", "chaos engineering", "platform engineering"],
+          strategicEntryPoints: [
+            { angle: "Incident Reduction", opener: "36 production incidents in 90 days. Your Selenium automation validates UI flows but cannot test real infrastructure behavior across AWS, Azure, GCP, and on-prem environments." },
+            { angle: "Multi-Cloud Coverage", opener: "Each cloud provider has unique networking, IAM, and infrastructure behavior. Docker-based testing misses the cross-provider inconsistencies that cause production incidents." },
+            { angle: "Platform Reliability at Scale", opener: "Enterprise customers run Harness across multi-cloud environments with unique configurations. Validating that matrix requires testing where your customers actually deploy." },
+          ],
+          evidenceTable: [
+            { signal: "36 incidents / 90 days", detail: "Production issues outpacing automation coverage across cloud environments" },
+            { signal: "Multi-cloud deployments", detail: "AWS, Azure, GCP, on-prem each have unique infrastructure behavior" },
+            { signal: "Selenium-in-Docker stack", detail: "Container-based testing misses real networking, IAM, and cloud-specific edge cases" },
+            { signal: "Platform engineering roles", detail: "Active hiring in platform engineering suggests scaling infrastructure challenges" },
+            { signal: "Feature flag complexity", detail: "Flag combinations across environments create exponential test surface" },
+          ],
+        },
+        personas: [
+          { name: "Puneet Singla", title: "Director of Quality Engineering", forensicHook: "Owns quality across a platform generating 36 production incidents in 90 days. Selenium-in-Docker validates synthetic flows while real multi-cloud infrastructure behavior goes untested.", whyNow: "Incident rate indicates quality coverage gaps that automation alone cannot close.", silentObjection: "Our Selenium pipeline is comprehensive and our team knows the platform better than external testers." },
+          { name: "Srinivas Bandi", title: "VP Engineering", forensicHook: "Engineering leadership accountable for platform reliability across multi-cloud deployments. 36 incidents in 90 days is a board-level quality metric.", whyNow: "Scaling enterprise customers means each incident affects more deployments.", silentObjection: "We can solve this with better automation and more engineering hires." },
+        ],
+      } as StageData,
+      icp: {
+        summary: "Target persona: Director of Quality Engineering / VP Engineering. Pain: production incidents from multi-cloud environment gaps that Selenium-in-Docker cannot cover.",
+        personas: [
+          { name: "Director of Quality Engineering", title: "Technical Buyer", forensicHook: "Multi-cloud quality coverage across real infrastructure environments", whyNow: "36 incidents in 90 days" },
+          { name: "VP Engineering", title: "Technical Buyer", forensicHook: "Platform reliability at enterprise scale across AWS/Azure/GCP/on-prem", whyNow: "Scaling enterprise customer base" },
+        ],
+      } as StageData,
+      leads: "1. Puneet Singla, Director of Quality Engineering (Score: 85, Technical Buyer, Standard cadence)\n2. [Verify Title] Srinivas Bandi, VP Engineering (Score: 80, Technical Buyer, Apollo required)\n3. Additional contacts via Apollo: VP Platform Engineering, Head of DevOps, Sr. Director Cloud Operations",
+      deployment: "Load cadence JSON via salesloft_batch_import_cadences. Create contacts via salesloft_create_person. Enroll via salesloft_add_person_to_cadence. Apollo enrichment needed for Srinivas Bandi title verification.",
+      feedback: "Measure: open rates (40%+ target), reply rates (5%+ target), phone connect rate, LinkedIn acceptance rate, meetings booked. Track incident-reduction messaging resonance.",
+    },
   },
   {
     id: "jasper",
@@ -881,6 +991,62 @@ Best,`,
         ],
       },
     ],
+    stages: {
+      forensic: {
+        summary: "AI content platform with 15-20% hallucination rate, Chrome-only enterprise deployment, platform freezes during content generation, and data loss risk from unsaved drafts. Pivoting from consumer AI writing to enterprise marketing platform.",
+        forensic: {
+          companyStats: {
+            founded: "2017",
+            valuation: "$1.5B (down from $1.5B peak)",
+            employees: "350+",
+            funding: "$250M+",
+            hq: "Austin, TX",
+            extra: [
+              { label: "Platform", value: "Enterprise AI content + agents" },
+              { label: "Pivot", value: "Consumer AI writing to enterprise marketing" },
+            ],
+          },
+          realitySnapshot: {
+            triggerEvent: "Jasper pivoting from consumer AI writing to enterprise marketing platform with agentic automation. Enterprise customers require cross-browser reliability, multi-user collaboration stability, and consistent agent output across environments.",
+            bleedingNeck: "15-20% hallucination rate across content generation. Platform freezes during long-form content creation. Chrome-only optimization means enterprise customers on Safari, Firefox, and locked-down corporate browsers experience degraded or broken UX. Unsaved draft data loss during crashes.",
+            enemy: "Chrome-only development and testing. Enterprise marketing teams use Safari, Firefox, and managed browser environments. Jasper's platform breaks in ways that only appear outside the Chrome bubble their engineering team develops in.",
+          },
+          psychologicalArchitecture: {
+            silentObjection: "We're focused on our AI models and agent architecture. Browser compatibility is a lower priority than model quality and feature velocity.",
+            greenLight: "When they realize enterprise buyers evaluate platforms across their existing browser environments. Chrome-only support is a sales blocker, not just a quality issue. Platform freezes and data loss erode enterprise trust faster than hallucination improvements can rebuild it.",
+          },
+          insiderVocabulary: ["agentic automation", "content generation", "hallucination rate", "brand voice", "enterprise marketing", "multi-user collaboration", "AI agents", "content workflow", "brand guidelines", "template system"],
+          strategicEntryPoints: [
+            { angle: "Enterprise Browser Gap", opener: "Enterprise marketing teams run Safari, Firefox, and managed browser builds. Chrome-only optimization means broken UX for the enterprise buyers Jasper is pivoting toward." },
+            { angle: "Platform Stability", opener: "Platform freezes during content generation and unsaved draft data loss. Enterprise customers need reliability before they trust an AI platform with their marketing workflow." },
+            { angle: "Agent Consistency", opener: "Agentic automation requires consistent output across environments. Browser and device variability affects how agents render, execute, and present results to enterprise users." },
+          ],
+          evidenceTable: [
+            { signal: "15-20% hallucination rate", detail: "Content accuracy issues compound with browser rendering inconsistencies" },
+            { signal: "Chrome-only optimization", detail: "Enterprise buyers on Safari/Firefox experience broken or degraded UX" },
+            { signal: "Platform freezes", detail: "Long-form content generation crashes, data loss from unsaved drafts" },
+            { signal: "Enterprise pivot", detail: "Moving from consumer AI to enterprise marketing platform with higher reliability bar" },
+            { signal: "Agentic automation launch", detail: "New agent architecture needs cross-environment validation" },
+          ],
+        },
+        personas: [
+          { name: "Rohini Patil", title: "Head of Engineering, Agentic Automation", forensicHook: "Leading Jasper's agent engineering. Agentic automation requires cross-environment validation that Chrome-only testing misses. Enterprise customers need consistent agent behavior across browsers and devices.", whyNow: "Agent platform launch requires enterprise-grade reliability.", silentObjection: "We're focused on agent intelligence, not browser compatibility." },
+          { name: "James De Roche", title: "Director of Product Management", forensicHook: "Product owner for enterprise features. Platform freezes, data loss, and Chrome-only UX are product-level risks that affect enterprise adoption and retention.", whyNow: "Enterprise pivot demands product reliability metrics.", silentObjection: "Browser support is an engineering issue, not a product priority." },
+          { name: "Jonathan Marek", title: "VP Engineering", forensicHook: "Engineering leadership accountable for platform reliability. 15-20% hallucination rate, platform crashes, and Chrome-only deployment are technical debt blocking enterprise credibility.", whyNow: "Enterprise customers require platform stability before committing budgets.", silentObjection: "We can address this with internal engineering improvements." },
+        ],
+      } as StageData,
+      icp: {
+        summary: "Target persona: Head of Engineering / Director of Product / VP Engineering. Pain: Chrome-only enterprise deployment, platform instability, and agent consistency across environments.",
+        personas: [
+          { name: "Head of Engineering, Agentic", title: "Technical Buyer", forensicHook: "Agent cross-environment validation", whyNow: "Agent platform launch" },
+          { name: "Director of Product", title: "Champion", forensicHook: "Enterprise product reliability and adoption", whyNow: "Enterprise pivot" },
+          { name: "VP Engineering", title: "Technical Buyer", forensicHook: "Platform reliability and technical debt", whyNow: "Enterprise credibility" },
+        ],
+      } as StageData,
+      leads: "1. Rohini Patil, Head of Engineering, Agentic Automation (Score: 82, Technical Buyer, Standard cadence)\n2. James De Roche, Director of Product Management (Score: 78, Champion, Compact cadence)\n3. Jonathan Marek, VP Engineering (Score: 75, Technical Buyer, Compact cadence)",
+      deployment: "Load cadence JSON via salesloft_batch_import_cadences. Create contacts via salesloft_create_person. Enroll via salesloft_add_person_to_cadence. 3 contacts, 26 total touchpoints.",
+      feedback: "Measure: open rates (40%+ target), reply rates (5%+ target), phone connect rate, LinkedIn acceptance rate, meetings booked. Track enterprise-pivot and agent messaging resonance.",
+    },
   },
   {
     id: "snap",
@@ -1710,7 +1876,6 @@ export const campaigns: Campaign[] = [
     cadences: 77,
     touches: 635,
     summary: "Consolidated output across all 6 campaigns. 23 accounts (1 disqualified), 90+ contacts, full pipeline from forensic analysis through outbound cadences.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vSPDYxLHNwIHfy7cKRWLPYwTZimIWhEc31W8GnSls3S_-xrqeC8xc-z9kEqZHUzThc-sLJvCPI7Cp9i/pub",
   },
   {
     id: "sharkninja-campaign",
@@ -1723,7 +1888,6 @@ export const campaigns: Campaign[] = [
     cadences: 3,
     touches: 27,
     summary: "WiFi pairing failures, peak-hour load collapse, and checkout crashes. Device fragmentation across consumer IoT, regulated sports betting, and hospitality booking flows.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vTn3Y4IamUfl2YwTNbsxlYDIKw2WDPz_F3ed0KkA2K3POCHcmdOceKS5TwK_iGX1c35HBZrVvR2v35F/pub",
   },
   {
     id: "israel",
@@ -1736,7 +1900,6 @@ export const campaigns: Campaign[] = [
     cadences: 10,
     touches: 62,
     summary: "Studio adoption stalled at 8%, 250 games monthly at device risk, regulatory remediation mode, overlay breakage after game updates, cross-platform fairness for esports, and preview-reality gaps.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vTQK8sCtrrgYtIBS5E03-EB4yerfUBqDnVH4vrwob7As6V5TT-qmLeAM6RLJuC9q4qCYEU0EVoY28qa/pub",
   },
   {
     id: "jasper-harness-glean-v2",
@@ -1749,7 +1912,6 @@ export const campaigns: Campaign[] = [
     cadences: 30,
     touches: 280,
     summary: "30 prioritized contacts across all three companies. Full cadences with 2-3 email variants per step, phone talk tracks, LinkedIn touches.",
-    docUrl: "https://docs.google.com/document/d/1mBuf4ay4APAqg94hT-GvLFXIMBnJ55yhsayJPmqctBs/preview",
   },
   {
     id: "jasper-harness-glean-v1",
@@ -1762,7 +1924,6 @@ export const campaigns: Campaign[] = [
     cadences: 12,
     touches: 102,
     summary: "Initial run. SSI disqualified (no product, ~20 researchers). Glean: 100+ connectors, hallucination risk. Harness: 36 incidents in 90 days. Jasper: 15-20% hallucination rate.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vRVEWb1bYnO9JR-kigxT60ARl2W5GNeUrfA_R0uT_ZKCaXtLppxheazzMbyAWoW0A/pub",
   },
   {
     id: "snap-robinhood-intuit",
@@ -1775,7 +1936,6 @@ export const campaigns: Campaign[] = [
     cadences: 12,
     touches: 78,
     summary: "Director/Manager level targeting. Snap: Camera2 API fragmentation across 600+ Android models. Robinhood: prediction markets $300M ARR target. Intuit: tax season functional failures.",
-    docUrl: null,
   },
   {
     id: "accessibility",
@@ -1788,6 +1948,5 @@ export const campaigns: Campaign[] = [
     cadences: 10,
     touches: 86,
     summary: "Accessibility testing campaign. Booking.com: DMA gatekeeper, EAA June 2025. Oura: VoiceOver broken since 2019. Checkout.com: SCA accessibility gaps.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vRpBH4TtR2czEFhIlqy48tYhMJTSOv5f5hi9kDq9vCMvCyf8kZWMYTrSPY78dfQgASf9eXLVIDcisr7/pub",
   },
 ];
