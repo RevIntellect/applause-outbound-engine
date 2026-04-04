@@ -1,173 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
-/* ── Campaign data ── */
-
-interface Campaign {
-  id: string;
-  title: string;
-  type: string;
-  date: string;
-  color: string;
-  accounts: { name: string; fit: number | null; status: string }[];
-  contacts: number;
-  cadences: number;
-  touches: number;
-  summary: string;
-  docUrl: string | null;
-}
-
-const campaigns: Campaign[] = [
-  {
-    id: "consolidated",
-    title: "Full Pipeline Output",
-    type: "All",
-    date: "2026-04-01/02",
-    color: "#00579f",
-    accounts: [
-      { name: "SharkNinja", fit: 87, status: "qualified" },
-      { name: "Caesars Sportsbook", fit: 89, status: "qualified" },
-      { name: "Best Western", fit: 84, status: "qualified" },
-      { name: "Elementor", fit: 88, status: "qualified" },
-      { name: "CrazyLabs", fit: 86, status: "qualified" },
-      { name: "Papaya Gaming", fit: 85, status: "qualified" },
-      { name: "Wix", fit: 83, status: "qualified" },
-      { name: "Yotpo", fit: 78, status: "qualified" },
-      { name: "Overwolf", fit: 76, status: "qualified" },
-      { name: "Candivore", fit: 71, status: "qualified" },
-      { name: "Harness", fit: 85, status: "qualified" },
-      { name: "Glean", fit: 89, status: "qualified" },
-      { name: "Jasper", fit: 82, status: "qualified" },
-      { name: "SSI", fit: null, status: "disqualified" },
-      { name: "Snap Inc.", fit: 88, status: "qualified" },
-      { name: "Robinhood", fit: 91, status: "qualified" },
-      { name: "Intuit", fit: 85, status: "qualified" },
-      { name: "Booking.com", fit: 90, status: "qualified" },
-      { name: "Oura", fit: 90, status: "qualified" },
-      { name: "Checkout.com", fit: 80, status: "qualified" },
-    ],
-    contacts: 94,
-    cadences: 77,
-    touches: 635,
-    summary:
-      "Consolidated output across all 6 campaigns. 23 accounts (1 disqualified), 90+ contacts, full pipeline from forensic analysis through outbound cadences. MFT and Accessibility campaigns.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vSPDYxLHNwIHfy7cKRWLPYwTZimIWhEc31W8GnSls3S_-xrqeC8xc-z9kEqZHUzThc-sLJvCPI7Cp9i/pub",
-  },
-  {
-    id: "sharkninja",
-    title: "SharkNinja / Caesars / Best Western",
-    type: "MFT",
-    date: "2026-04-01",
-    color: "#7c6bc4",
-    accounts: [
-      { name: "SharkNinja", fit: 87, status: "qualified" },
-      { name: "Caesars Sportsbook", fit: 89, status: "qualified" },
-      { name: "Best Western", fit: 84, status: "qualified" },
-    ],
-    contacts: 9,
-    cadences: 3,
-    touches: 27,
-    summary:
-      "WiFi pairing failures, peak-hour load collapse, and checkout crashes. Device fragmentation across consumer IoT, regulated sports betting, and hospitality booking flows.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vTn3Y4IamUfl2YwTNbsxlYDIKw2WDPz_F3ed0KkA2K3POCHcmdOceKS5TwK_iGX1c35HBZrVvR2v35F/pub",
-  },
-  {
-    id: "israel",
-    title: "Israel - Manual Functional Testing (7 companies)",
-    type: "MFT",
-    date: "2026-04-01",
-    color: "#2db87e",
-    accounts: [
-      { name: "Elementor", fit: 88, status: "qualified" },
-      { name: "CrazyLabs", fit: 86, status: "qualified" },
-      { name: "Papaya Gaming", fit: 85, status: "qualified" },
-      { name: "Wix", fit: 83, status: "qualified" },
-      { name: "Yotpo", fit: 78, status: "qualified" },
-      { name: "Overwolf", fit: 76, status: "qualified" },
-      { name: "Candivore", fit: 71, status: "qualified" },
-    ],
-    contacts: 21,
-    cadences: 10,
-    touches: 62,
-    summary:
-      "Studio adoption stalled at 8%, 250 games monthly at device risk, regulatory remediation mode, overlay breakage after game updates, cross-platform fairness for esports, and preview-reality gaps.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vTQK8sCtrrgYtIBS5E03-EB4yerfUBqDnVH4vrwob7As6V5TT-qmLeAM6RLJuC9q4qCYEU0EVoY28qa/pub",
-  },
-  {
-    id: "jasper-harness-glean-v2",
-    title: "Jasper / Harness / Glean (Apr 2)",
-    type: "MFT",
-    date: "2026-04-02",
-    color: "#4a90d9",
-    accounts: [
-      { name: "Harness", fit: 85, status: "qualified" },
-      { name: "Glean", fit: 89, status: "qualified" },
-      { name: "Jasper", fit: 82, status: "qualified" },
-    ],
-    contacts: 30,
-    cadences: 30,
-    touches: 280,
-    summary:
-      "30 prioritized contacts across all three companies. Full cadences with 2-3 email variants per step, phone talk tracks, LinkedIn touches. Harness: multi-browser testing gaps. Glean: connector failures. Jasper: platform instability.",
-    docUrl: "https://docs.google.com/document/d/1mBuf4ay4APAqg94hT-GvLFXIMBnJ55yhsayJPmqctBs/preview",
-  },
-  {
-    id: "jasper-harness-glean-v1",
-    title: "SSI / Glean / Harness / Jasper (Apr 1)",
-    type: "MFT",
-    date: "2026-04-01",
-    color: "#d4843e",
-    accounts: [
-      { name: "SSI", fit: null, status: "disqualified" },
-      { name: "Glean", fit: 89, status: "qualified" },
-      { name: "Harness", fit: 85, status: "qualified" },
-      { name: "Jasper", fit: 82, status: "qualified" },
-    ],
-    contacts: 12,
-    cadences: 12,
-    touches: 102,
-    summary:
-      "Initial run. SSI disqualified (no product, ~20 researchers). Glean: 100+ connectors, hallucination risk. Harness: 36 incidents in 90 days. Jasper: 15-20% hallucination rate, Chrome-only support.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vRVEWb1bYnO9JR-kigxT60ARl2W5GNeUrfA_R0uT_ZKCaXtLppxheazzMbyAWoW0A/pub",
-  },
-  {
-    id: "snap-robinhood-intuit",
-    title: "Snap / Robinhood / Intuit",
-    type: "MFT",
-    date: "2026-04-01",
-    color: "#c94e7c",
-    accounts: [
-      { name: "Robinhood", fit: 91, status: "qualified" },
-      { name: "Snap Inc.", fit: 88, status: "qualified" },
-      { name: "Intuit", fit: 85, status: "qualified" },
-    ],
-    contacts: 12,
-    cadences: 12,
-    touches: 78,
-    summary:
-      "Director/Manager level targeting. Snap: Camera2 API fragmentation across 600+ Android models, Spectacles 2026 launch. Robinhood: prediction markets $300M ARR target, UK/EU expansion. Intuit: tax season functional failures, multi-product consolidation.",
-    docUrl: null,
-  },
-  {
-    id: "accessibility",
-    title: "Booking.com / Oura / Checkout.com",
-    type: "Accessibility",
-    date: "2026-04-01",
-    color: "#00579f",
-    accounts: [
-      { name: "Booking.com", fit: 90, status: "qualified" },
-      { name: "Oura", fit: 90, status: "qualified" },
-      { name: "Checkout.com", fit: 80, status: "qualified" },
-    ],
-    contacts: 10,
-    cadences: 10,
-    touches: 86,
-    summary:
-      "Accessibility testing campaign. Booking.com: DMA gatekeeper, EAA June 2025, screen reader failures. Oura: VoiceOver broken since 2019, 40M EUR EAA exposure. Checkout.com: partially conformant, SCA accessibility gaps.",
-    docUrl: "https://docs.google.com/document/d/e/2PACX-1vRpBH4TtR2czEFhIlqy48tYhMJTSOv5f5hi9kDq9vCMvCyf8kZWMYTrSPY78dfQgASf9eXLVIDcisr7/pub",
-  },
-];
+import { accounts, campaigns } from "@/lib/outputs-data";
+import type { AccountDetail, TouchPoint } from "@/lib/outputs-types";
 
 /* ── Badges ── */
 
@@ -186,11 +21,11 @@ function TypeBadge({ type }: { type: string }) {
   );
 }
 
-function FitBadge({ score }: { score: number | null }) {
-  if (score === null)
-    return <span className="text-[0.625rem] text-outline">DQ</span>;
-  const color = score >= 85 ? "#1a7a4e" : score >= 75 ? "#d4843e" : "#727782";
-  const bg = score >= 85 ? "#2db87e20" : score >= 75 ? "#d4843e20" : "#72778220";
+function FitBadge({ score }: { score: string }) {
+  const num = parseInt(score);
+  if (isNaN(num)) return <span className="text-[0.625rem] text-outline">DQ</span>;
+  const color = num >= 85 ? "#1a7a4e" : num >= 75 ? "#d4843e" : "#727782";
+  const bg = num >= 85 ? "#2db87e20" : num >= 75 ? "#d4843e20" : "#72778220";
   return (
     <span
       className="text-[0.625rem] font-bold px-1.5 py-0.5 rounded"
@@ -201,12 +36,395 @@ function FitBadge({ score }: { score: number | null }) {
   );
 }
 
+function PriorityBadge({ priority }: { priority: string }) {
+  const styles: Record<string, { bg: string; text: string }> = {
+    HIGH: { bg: "#2db87e20", text: "#1a7a4e" },
+    "MED-HIGH": { bg: "#d4843e20", text: "#a0632a" },
+    PENDING: { bg: "#4a90d920", text: "#2a6cb0" },
+    SKIP: { bg: "#72778220", text: "#727782" },
+  };
+  const s = styles[priority] || styles.PENDING;
+  return (
+    <span
+      className="text-[0.6875rem] font-bold px-2 py-0.5 rounded uppercase tracking-wide"
+      style={{ backgroundColor: s.bg, color: s.text }}
+    >
+      {priority}
+    </span>
+  );
+}
+
+function CadenceBadge({ type }: { type: string }) {
+  const config: Record<string, { color: string }> = {
+    Extended: { color: "#7c6bc4" },
+    Standard: { color: "#4a90d9" },
+    Compact: { color: "#2db87e" },
+  };
+  const c = config[type] || config.Standard;
+  return (
+    <span
+      className="text-[0.625rem] font-semibold px-1.5 py-0.5 rounded"
+      style={{ backgroundColor: `${c.color}20`, color: c.color }}
+    >
+      {type}
+    </span>
+  );
+}
+
+/* ── Copy button ── */
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="flex items-center gap-1 px-2 py-1 rounded text-[0.6875rem] font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors"
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+        {copied ? "check" : "content_copy"}
+      </span>
+      {copied ? "Copied" : "Copy"}
+    </button>
+  );
+}
+
+/* ── Touchpoint row ── */
+
+const channelIcon: Record<string, { icon: string; color: string }> = {
+  Email: { icon: "mail", color: "#4a90d9" },
+  Phone: { icon: "call", color: "#d4843e" },
+  LinkedIn: { icon: "person", color: "#2db87e" },
+};
+
+function TouchpointRow({ touch }: { touch: TouchPoint }) {
+  const [expanded, setExpanded] = useState(false);
+  const ch = channelIcon[touch.channel] || { icon: "task", color: "#666" };
+  const hasContent =
+    touch.content || (touch.variants && touch.variants.length > 0);
+
+  return (
+    <div className="border-b border-outline-variant/10 last:border-0">
+      <button
+        type="button"
+        onClick={() => hasContent && setExpanded(!expanded)}
+        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+          hasContent
+            ? "hover:bg-surface-container-low cursor-pointer"
+            : "cursor-default"
+        }`}
+      >
+        <span className="text-xs font-bold text-on-surface-variant w-10 shrink-0">
+          Day {touch.day}
+        </span>
+        <span
+          className="material-symbols-outlined shrink-0"
+          style={{ fontSize: 16, color: ch.color }}
+        >
+          {ch.icon}
+        </span>
+        <span className="text-sm text-on-surface flex-1">
+          <span className="font-medium">{touch.channel}</span>
+          <span className="text-on-surface-variant ml-1.5">{touch.action}</span>
+        </span>
+        {hasContent && (
+          <span
+            className="material-symbols-outlined text-outline transition-transform"
+            style={{
+              fontSize: 16,
+              transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
+            }}
+          >
+            chevron_right
+          </span>
+        )}
+      </button>
+      {expanded && hasContent && (
+        <div className="px-4 pb-4 space-y-3">
+          {touch.variants?.map((v, vi) => (
+            <div key={vi} className="bg-inverse-surface rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[0.6875rem] font-semibold text-inverse-on-surface/60 uppercase tracking-wide">
+                  {v.label}
+                </span>
+                <CopyButton text={v.content} />
+              </div>
+              {v.subject && (
+                <div className="text-xs text-inverse-on-surface/50 mb-2">
+                  Subject:{" "}
+                  <span className="text-inverse-on-surface/80">
+                    {v.subject}
+                  </span>
+                </div>
+              )}
+              <pre className="text-[0.8125rem] text-inverse-on-surface/90 leading-relaxed font-mono whitespace-pre-wrap">
+                {v.content}
+              </pre>
+            </div>
+          ))}
+          {touch.content && !touch.variants && (
+            <div className="bg-inverse-surface rounded-lg p-4">
+              <div className="flex justify-end mb-2">
+                <CopyButton text={touch.content} />
+              </div>
+              <pre className="text-[0.8125rem] text-inverse-on-surface/90 leading-relaxed font-mono whitespace-pre-wrap">
+                {touch.content}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Stage labels ── */
+
+const stageLabels: Record<string, { label: string; icon: string }> = {
+  forensic: { label: "Forensic B2B Analysis", icon: "search" },
+  icp: { label: "Strategic ICP Profile", icon: "person_search" },
+  leads: { label: "Lead Research", icon: "people" },
+  deployment: { label: "SalesLoft Deployment", icon: "rocket_launch" },
+  feedback: { label: "Feedback Loop", icon: "loop" },
+};
+
+/* ── Account detail panel ── */
+
+function AccountPanel({
+  account,
+  isOpen,
+  onToggle,
+}: {
+  account: AccountDetail;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const [selectedContactIdx, setSelectedContactIdx] = useState(0);
+  const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>({});
+  const selectedContact = account.contacts[selectedContactIdx];
+
+  const toggleStage = (key: string) =>
+    setExpandedStages((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  return (
+    <div className="border border-outline-variant/15 rounded-lg overflow-hidden">
+      {/* Account Header */}
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container-low transition-colors"
+      >
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0"
+          style={{
+            backgroundColor:
+              account.priority === "SKIP" ? "#727782" : account.color,
+          }}
+        >
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 16 }}
+          >
+            {account.priority === "SKIP" ? "block" : "domain"}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0 text-left">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-on-surface">
+              {account.company}
+            </span>
+            <PriorityBadge priority={account.priority} />
+          </div>
+          <p className="text-[0.6875rem] text-on-surface-variant truncate">
+            {account.description}
+          </p>
+        </div>
+        <FitBadge score={account.fitScore} />
+        <span
+          className="material-symbols-outlined text-on-surface-variant transition-transform"
+          style={{
+            fontSize: 18,
+            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          }}
+        >
+          expand_more
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="px-4 pb-4 space-y-4">
+          {/* Description */}
+          <div className="bg-surface-container rounded-lg px-3 py-2.5">
+            <p className="text-sm text-on-surface leading-relaxed">
+              {account.description}
+            </p>
+            {account.rep && account.rep !== "TBD" && (
+              <p className="text-[0.6875rem] text-on-surface-variant mt-1">
+                Rep: {account.rep}
+              </p>
+            )}
+          </div>
+
+          {/* Pipeline Stage Sections */}
+          {account.stages &&
+            Object.entries(account.stages).map(([key, content]) => {
+              if (!content) return null;
+              const stage = stageLabels[key];
+              const stageKey = `${account.id}-${key}`;
+              const isStageOpen = expandedStages[stageKey];
+
+              return (
+                <div
+                  key={stageKey}
+                  className="bg-surface-container rounded-lg overflow-hidden"
+                >
+                  <button
+                    onClick={() => toggleStage(stageKey)}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-surface-container-low/50 transition-colors"
+                  >
+                    <span
+                      className="material-symbols-outlined text-primary"
+                      style={{ fontSize: 16 }}
+                    >
+                      {stage?.icon || "info"}
+                    </span>
+                    <span className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide flex-1 text-left">
+                      {stage?.label || key}
+                    </span>
+                    <span
+                      className="material-symbols-outlined text-on-surface-variant transition-transform"
+                      style={{
+                        fontSize: 16,
+                        transform: isStageOpen
+                          ? "rotate(180deg)"
+                          : "rotate(0deg)",
+                      }}
+                    >
+                      expand_more
+                    </span>
+                  </button>
+                  {isStageOpen && (
+                    <div className="px-3 pb-2.5">
+                      <div className="bg-surface-container-lowest rounded-md px-3 py-2">
+                        <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line">
+                          {content}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+          {/* Contacts */}
+          {account.contacts.length > 0 && (
+            <div>
+              <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
+                Contacts ({account.contacts.length})
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                {account.contacts.map((contact, idx) => (
+                  <button
+                    key={contact.name}
+                    type="button"
+                    onClick={() => setSelectedContactIdx(idx)}
+                    className={`text-left p-3 rounded-lg transition-all ${
+                      selectedContactIdx === idx
+                        ? "bg-surface-container-high shadow-lift"
+                        : "bg-surface-container shadow-ghost hover:shadow-lift"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-on-surface">
+                          {contact.apolloRequired && (
+                            <span className="inline-flex items-center gap-0.5 text-[0.6rem] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded mr-1.5 align-middle">
+                              <span
+                                className="material-symbols-outlined"
+                                style={{ fontSize: 10 }}
+                              >
+                                search
+                              </span>
+                              APOLLO
+                            </span>
+                          )}
+                          {contact.name}
+                        </p>
+                        <p className="text-xs text-on-surface-variant">
+                          {contact.title}
+                        </p>
+                      </div>
+                      <span
+                        className="text-base font-bold shrink-0"
+                        style={{ color: account.color }}
+                      >
+                        {contact.score}
+                      </span>
+                    </div>
+                    {contact.capability && (
+                      <p className="text-[0.625rem] text-on-surface-variant leading-snug mb-1">
+                        {contact.capability}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <CadenceBadge type={contact.cadenceType} />
+                      <span className="text-[0.625rem] text-outline">
+                        {contact.roleClass}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Selected contact cadence */}
+              {selectedContact && selectedContact.touches.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide">
+                      Cadence: {selectedContact.name}
+                    </span>
+                    <CadenceBadge type={selectedContact.cadenceType} />
+                    <span className="text-[0.625rem] text-outline">
+                      {selectedContact.touches.length} touches
+                    </span>
+                  </div>
+                  <div className="bg-surface-container-low rounded-lg overflow-hidden">
+                    {selectedContact.touches.map((touch, ti) => (
+                      <TouchpointRow key={ti} touch={touch} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── Page ── */
 
 export default function OutputsPage() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(
+    null
+  );
+  const [openAccountIds, setOpenAccountIds] = useState<Record<string, boolean>>(
+    {}
+  );
 
-  const active = campaigns.find((c) => c.id === selectedId);
+  const activeCampaign = campaigns.find((c) => c.id === selectedCampaignId);
+  const campaignAccounts = activeCampaign
+    ? activeCampaign.accountIds
+        .map((id) => accounts.find((a) => a.id === id))
+        .filter(Boolean) as AccountDetail[]
+    : [];
+
+  const toggleAccount = (id: string) =>
+    setOpenAccountIds((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="max-w-[960px] mx-auto pb-12 space-y-6">
@@ -217,20 +435,25 @@ export default function OutputsPage() {
         </h1>
         <p className="text-on-surface-variant text-sm mt-1 max-w-[640px] leading-relaxed">
           {campaigns.length} campaigns, 23 accounts, 90+ contacts. Select a
-          campaign to view the report.
+          campaign to view per-account reports.
         </p>
       </div>
 
       {/* Campaign Tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {campaigns.map((c) => {
-          const isSelected = selectedId === c.id;
-          const qualified = c.accounts.filter((a) => a.status === "qualified");
+          const isSelected = selectedCampaignId === c.id;
+          const qualified = c.accountIds.filter((id) => {
+            const a = accounts.find((acc) => acc.id === id);
+            return a && a.priority !== "SKIP";
+          });
 
           return (
             <button
               key={c.id}
-              onClick={() => setSelectedId(isSelected ? null : c.id)}
+              onClick={() =>
+                setSelectedCampaignId(isSelected ? null : c.id)
+              }
               className={`relative text-left px-5 py-4 rounded-xl transition-all ${
                 isSelected
                   ? "bg-surface-container-lowest shadow-lift ring-2 ring-primary"
@@ -244,35 +467,14 @@ export default function OutputsPage() {
                 />
               )}
               <div className="flex items-start justify-between gap-2 mb-1.5">
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-sm font-semibold text-on-surface leading-tight">
-                    {c.title}
-                  </h2>
-                </div>
+                <h2 className="text-sm font-semibold text-on-surface leading-tight flex-1 min-w-0">
+                  {c.title}
+                </h2>
                 <TypeBadge type={c.type} />
               </div>
               <p className="text-[0.6875rem] text-on-surface-variant mb-2">
                 {c.date}
               </p>
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {c.accounts.slice(0, 4).map((a) => (
-                  <span
-                    key={a.name}
-                    className={`text-[0.625rem] px-1.5 py-0.5 rounded ${
-                      a.status === "disqualified"
-                        ? "bg-surface-container text-outline line-through"
-                        : "bg-surface-container text-on-surface-variant"
-                    }`}
-                  >
-                    {a.name}
-                  </span>
-                ))}
-                {c.accounts.length > 4 && (
-                  <span className="text-[0.625rem] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">
-                    +{c.accounts.length - 4} more
-                  </span>
-                )}
-              </div>
               <div className="flex gap-3 text-[0.625rem] text-on-surface-variant">
                 <span>{qualified.length} accounts</span>
                 <span>{c.contacts} contacts</span>
@@ -283,39 +485,39 @@ export default function OutputsPage() {
         })}
       </div>
 
-      {/* Expanded Campaign Report */}
-      {active && (
+      {/* Expanded Campaign */}
+      {activeCampaign && (
         <div className="bg-surface-container-lowest rounded-xl shadow-lift overflow-hidden">
-          {/* Report Header */}
+          {/* Campaign Header */}
           <div
             className="px-6 py-4 flex items-center gap-4"
-            style={{ borderBottom: `3px solid ${active.color}` }}
+            style={{ borderBottom: `3px solid ${activeCampaign.color}` }}
           >
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
-              style={{ backgroundColor: active.color }}
+              style={{ backgroundColor: activeCampaign.color }}
             >
               <span
                 className="material-symbols-outlined"
                 style={{ fontSize: 20 }}
               >
-                {active.type === "Accessibility"
+                {activeCampaign.type === "Accessibility"
                   ? "accessibility_new"
                   : "devices"}
               </span>
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-semibold text-on-surface">
-                {active.title}
+                {activeCampaign.title}
               </h2>
               <p className="text-xs text-on-surface-variant">
-                {active.type} Campaign / {active.date}
+                {activeCampaign.type} Campaign / {activeCampaign.date}
               </p>
             </div>
           </div>
 
           <div className="px-6 py-5 space-y-5">
-            {/* Stats Row */}
+            {/* Stats */}
             <div className="flex flex-wrap gap-5">
               <div className="flex items-center gap-2">
                 <span
@@ -325,25 +527,11 @@ export default function OutputsPage() {
                   domain
                 </span>
                 <span className="text-sm text-on-surface font-medium">
-                  {
-                    active.accounts.filter((a) => a.status === "qualified")
-                      .length
-                  }
+                  {campaignAccounts.filter((a) => a.priority !== "SKIP").length}
                 </span>
                 <span className="text-xs text-on-surface-variant">
                   accounts
                 </span>
-                {active.accounts.some((a) => a.status === "disqualified") && (
-                  <span className="text-xs text-outline">
-                    (
-                    {
-                      active.accounts.filter(
-                        (a) => a.status === "disqualified"
-                      ).length
-                    }{" "}
-                    DQ)
-                  </span>
-                )}
               </div>
               <div className="flex items-center gap-2">
                 <span
@@ -353,7 +541,7 @@ export default function OutputsPage() {
                   people
                 </span>
                 <span className="text-sm text-on-surface font-medium">
-                  {active.contacts}
+                  {activeCampaign.contacts}
                 </span>
                 <span className="text-xs text-on-surface-variant">
                   contacts
@@ -367,7 +555,7 @@ export default function OutputsPage() {
                   route
                 </span>
                 <span className="text-sm text-on-surface font-medium">
-                  {active.cadences}
+                  {activeCampaign.cadences}
                 </span>
                 <span className="text-xs text-on-surface-variant">
                   cadences
@@ -381,44 +569,46 @@ export default function OutputsPage() {
                   touch_app
                 </span>
                 <span className="text-sm text-on-surface font-medium">
-                  {active.touches}
+                  {activeCampaign.touches}
                 </span>
-                <span className="text-xs text-on-surface-variant">touches</span>
+                <span className="text-xs text-on-surface-variant">
+                  touches
+                </span>
               </div>
             </div>
 
-            {/* Account Chips */}
-            <div className="flex flex-wrap gap-2">
-              {active.accounts.map((a) => (
-                <div
-                  key={a.name}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
-                    a.status === "disqualified"
-                      ? "bg-surface-container text-outline line-through"
-                      : "bg-surface-container text-on-surface"
-                  }`}
-                >
-                  {a.name}
-                  <FitBadge score={a.fit} />
-                </div>
-              ))}
-            </div>
-
-            {/* Summary Box */}
+            {/* Summary */}
             <div className="bg-surface-container rounded-lg px-4 py-3">
               <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-1.5">
                 Campaign Summary
               </div>
               <p className="text-sm text-on-surface leading-relaxed">
-                {active.summary}
+                {activeCampaign.summary}
               </p>
+            </div>
+
+            {/* Per-Account Reports */}
+            <div>
+              <div className="text-[0.6875rem] font-semibold text-on-surface-variant uppercase tracking-wide mb-2">
+                Account Reports ({campaignAccounts.length})
+              </div>
+              <div className="space-y-2">
+                {campaignAccounts.map((account) => (
+                  <AccountPanel
+                    key={account.id}
+                    account={account}
+                    isOpen={!!openAccountIds[account.id]}
+                    onToggle={() => toggleAccount(account.id)}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Google Doc Link */}
             <div className="border-t border-outline-variant/15 pt-4 flex items-center justify-between">
-              {active.docUrl ? (
+              {activeCampaign.docUrl ? (
                 <a
-                  href={active.docUrl}
+                  href={activeCampaign.docUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -449,7 +639,7 @@ export default function OutputsPage() {
                 </span>
               )}
               <button
-                onClick={() => setSelectedId(null)}
+                onClick={() => setSelectedCampaignId(null)}
                 className="text-xs text-on-surface-variant hover:text-on-surface transition-colors"
               >
                 Collapse
@@ -487,7 +677,9 @@ export default function OutputsPage() {
           </div>
           <div>
             <div className="text-2xl font-bold text-on-surface">635+</div>
-            <div className="text-xs text-on-surface-variant">Total Touches</div>
+            <div className="text-xs text-on-surface-variant">
+              Total Touches
+            </div>
           </div>
         </div>
         <div className="flex gap-3 mt-3 pt-3 border-t border-outline-variant/15">
