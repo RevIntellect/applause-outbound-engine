@@ -5,9 +5,7 @@ import { accounts, campaigns } from "@/lib/outputs-data";
 import type {
   AccountDetail,
   Contact,
-  TouchPoint,
   StageData,
-  ForensicContent,
 } from "@/lib/outputs-types";
 
 /* ── Style constants matching Process Overview ── */
@@ -472,10 +470,12 @@ function AccountPanel({
   account,
   isOpen,
   onToggle,
+  campaignTags,
 }: {
   account: AccountDetail;
   isOpen: boolean;
   onToggle: () => void;
+  campaignTags?: { id: string; title: string; color: string; type: string }[];
 }) {
   const [selectedContactIdx, setSelectedContactIdx] = useState(0);
   const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>(
@@ -518,11 +518,22 @@ function AccountPanel({
             </span>
             <PriorityBadge priority={account.priority} />
           </div>
-          <p className="text-[0.6875rem] text-on-surface-variant truncate mt-0.5">
-            {account.rep && account.rep !== "TBD" ? account.rep + " · " : ""}
-            {account.contacts.length} contacts
-            {totalTouches > 0 ? ` · ${totalTouches} touches` : ""}
-          </p>
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            <span className="text-[0.6875rem] text-on-surface-variant">
+              {account.rep && account.rep !== "TBD" ? account.rep + " · " : ""}
+              {account.contacts.length} contacts
+              {totalTouches > 0 ? ` · ${totalTouches} touches` : ""}
+            </span>
+            {campaignTags && campaignTags.length > 0 && campaignTags.map((ct) => (
+              <span
+                key={ct.id}
+                className="text-[0.5625rem] font-medium px-1.5 py-0.5 rounded"
+                style={{ backgroundColor: `${ct.color}15`, color: ct.color }}
+              >
+                {ct.type}
+              </span>
+            ))}
+          </div>
         </div>
         <div className="text-right shrink-0">
           <div
@@ -740,219 +751,190 @@ function AccountPanel({
   );
 }
 
+/* ── Helper: get campaigns for an account ── */
+
+function getCampaignsForAccount(accountId: string) {
+  return campaigns.filter(
+    (c) => c.id !== "consolidated" && c.accountIds.includes(accountId)
+  );
+}
+
+/* ── Filter types ── */
+
+type FilterMode = "all" | "high" | "med-high" | "has-cadences";
+type SortMode = "priority" | "score" | "company";
+
+const priorityOrder: Record<string, number> = {
+  HIGH: 0,
+  "MED-HIGH": 1,
+  PENDING: 2,
+  SKIP: 3,
+};
+
 /* ── Page ── */
 
 export default function OutputsPage() {
-  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(
-    null
-  );
   const [openAccountIds, setOpenAccountIds] = useState<Record<string, boolean>>(
     {}
   );
-
-  const activeCampaign = campaigns.find((c) => c.id === selectedCampaignId);
-  const campaignAccounts = activeCampaign
-    ? activeCampaign.accountIds
-        .map((id) => accounts.find((a) => a.id === id))
-        .filter(Boolean) as AccountDetail[]
-    : [];
+  const [filter, setFilter] = useState<FilterMode>("all");
+  const [sort, setSort] = useState<SortMode>("priority");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleAccount = (id: string) =>
     setOpenAccountIds((prev) => ({ ...prev, [id]: !prev[id] }));
 
+  /* Filter accounts */
+  const filteredAccounts = accounts
+    .filter((a) => {
+      if (filter === "high") return a.priority === "HIGH";
+      if (filter === "med-high")
+        return a.priority === "HIGH" || a.priority === "MED-HIGH";
+      if (filter === "has-cadences")
+        return a.contacts.some((c) => c.touches.length > 0);
+      return true;
+    })
+    .filter((a) => {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        a.company.toLowerCase().includes(q) ||
+        a.rep.toLowerCase().includes(q) ||
+        a.contacts.some((c) => c.name.toLowerCase().includes(q))
+      );
+    })
+    .sort((a, b) => {
+      if (sort === "priority")
+        return (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
+      if (sort === "score")
+        return parseInt(b.fitScore) - parseInt(a.fitScore);
+      return a.company.localeCompare(b.company);
+    });
+
+  /* Derived stats */
+  const totalContacts = accounts.reduce((s, a) => s + a.contacts.length, 0);
+  const totalTouches = accounts.reduce(
+    (s, a) => s + a.contacts.reduce((t, c) => t + c.touches.length, 0),
+    0
+  );
+  const highCount = accounts.filter((a) => a.priority === "HIGH").length;
+  const withCadences = accounts.filter((a) =>
+    a.contacts.some((c) => c.touches.length > 0)
+  ).length;
+
+  /* Filter pills config */
+  const filters: { key: FilterMode; label: string; count: number }[] = [
+    { key: "all", label: "All Accounts", count: accounts.length },
+    { key: "high", label: "HIGH", count: highCount },
+    { key: "med-high", label: "HIGH + MED", count: accounts.filter((a) => a.priority === "HIGH" || a.priority === "MED-HIGH").length },
+    { key: "has-cadences", label: "With Cadences", count: withCadences },
+  ];
+
   return (
     <div className="max-w-[960px] mx-auto pb-12 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="font-sans text-[2rem] font-bold tracking-[-0.02em] text-on-surface">
-          Pipeline Outputs
-        </h1>
-        <p className="text-on-surface-variant text-sm mt-1 max-w-[640px] leading-relaxed">
-          {campaigns.length} campaigns, 23 accounts, 90+ contacts. Select a
-          campaign, then click an account to view leads, cadences, and pipeline
-          output.
-        </p>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="font-sans text-[2rem] font-bold tracking-[-0.02em] text-on-surface">
+            Pipeline Outputs
+          </h1>
+          <p className="text-on-surface-variant text-sm mt-1 leading-relaxed">
+            {accounts.length} accounts, {totalContacts} contacts, {totalTouches}+ touches.
+            Click any account to view leads, cadences, and full pipeline output.
+          </p>
+        </div>
       </div>
 
-      {/* Campaign Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {campaigns.map((c) => {
-          const isSelected = selectedCampaignId === c.id;
-          const qualifiedCount = c.accountIds.filter((id) => {
-            const a = accounts.find((acc) => acc.id === id);
-            return a && a.priority !== "SKIP";
-          }).length;
+      {/* Stats bar */}
+      <div className="bg-surface-container-lowest rounded-xl p-4 shadow-ghost flex flex-wrap gap-6">
+        {[
+          { icon: "domain", val: accounts.length, label: "Accounts", sub: `${accounts.filter((a) => a.priority === "SKIP").length} DQ` },
+          { icon: "people", val: totalContacts, label: "Contacts" },
+          { icon: "touch_app", val: `${totalTouches}+`, label: "Touches" },
+          { icon: "campaign", val: campaigns.length - 1, label: "Campaigns" },
+          { icon: "trending_up", val: highCount, label: "HIGH Priority" },
+        ].map((s) => (
+          <div key={s.label} className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary" style={{ fontSize: 18 }}>{s.icon}</span>
+            <div>
+              <span className="text-base font-bold text-on-surface">{s.val}</span>
+              {s.sub && <span className="text-[0.625rem] text-on-surface-variant ml-1">({s.sub})</span>}
+              <div className="text-[0.625rem] text-on-surface-variant">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-          return (
+      {/* Filter + Sort + Search */}
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Filter pills */}
+        <div className="flex gap-1">
+          {filters.map((f) => (
             <button
-              key={c.id}
-              onClick={() =>
-                setSelectedCampaignId(isSelected ? null : c.id)
-              }
-              className={`relative text-left px-5 py-4 rounded-xl transition-all ${
-                isSelected
-                  ? "shadow-lift ring-2 scale-[1.02]"
-                  : "bg-surface-container-lowest shadow-ghost hover:shadow-lift"
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-3 py-1.5 rounded-lg text-[0.6875rem] font-medium transition-colors ${
+                filter === f.key
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
               }`}
-              style={
-                isSelected
-                  ? {
-                      outline: `2px solid ${c.color}`,
-                      background: `${c.color}08`,
-                    }
-                  : {}
-              }
             >
-              {isSelected && (
-                <div
-                  className="absolute top-0 left-0 right-0 h-[3px] rounded-t-xl"
-                  style={{ backgroundColor: c.color }}
-                />
-              )}
-              <div className="flex items-start justify-between gap-2 mb-1.5">
-                <h2 className="text-sm font-semibold text-on-surface leading-tight flex-1 min-w-0">
-                  {c.title}
-                </h2>
-                <TypeBadge type={c.type} />
-              </div>
-              <p className="text-[0.6875rem] text-on-surface-variant mb-2">
-                {c.date}
-              </p>
-              <div className="flex gap-3 text-[0.625rem] text-on-surface-variant">
-                <span>{qualifiedCount} accounts</span>
-                <span>{c.contacts} contacts</span>
-                <span>{c.touches} touches</span>
-              </div>
+              {f.label}
+              <span className="ml-1 opacity-70">{f.count}</span>
             </button>
+          ))}
+        </div>
+
+        {/* Sort */}
+        <div className="flex items-center gap-1 ml-auto">
+          <span className="text-[0.625rem] text-on-surface-variant uppercase tracking-wide">Sort:</span>
+          {(["priority", "score", "company"] as SortMode[]).map((s) => (
+            <button
+              key={s}
+              onClick={() => setSort(s)}
+              className={`px-2 py-1 rounded text-[0.625rem] font-medium transition-colors ${
+                sort === s
+                  ? "bg-surface-container-high text-on-surface"
+                  : "text-on-surface-variant hover:bg-surface-container"
+              }`}
+            >
+              {s === "priority" ? "Priority" : s === "score" ? "Fit Score" : "A-Z"}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div className="relative">
+          <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant" style={{ fontSize: 16 }}>search</span>
+          <input
+            type="text"
+            placeholder="Search accounts, reps, contacts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 pr-3 py-1.5 rounded-lg bg-surface-container text-sm text-on-surface placeholder:text-on-surface-variant/50 border-none outline-none focus:ring-2 focus:ring-primary/30 w-[240px]"
+          />
+        </div>
+      </div>
+
+      {/* Account list */}
+      <div className="space-y-3">
+        {filteredAccounts.length === 0 && (
+          <div className="text-center py-12 text-on-surface-variant text-sm">
+            No accounts match the current filter.
+          </div>
+        )}
+        {filteredAccounts.map((account) => {
+          const accountCampaigns = getCampaignsForAccount(account.id);
+          return (
+            <AccountPanel
+              key={account.id}
+              account={account}
+              isOpen={!!openAccountIds[account.id]}
+              onToggle={() => toggleAccount(account.id)}
+              campaignTags={accountCampaigns}
+            />
           );
         })}
-      </div>
-
-      {/* Expanded Campaign */}
-      {activeCampaign && (
-        <section>
-          {/* Campaign header bar */}
-          <div
-            className="bg-surface-container-lowest rounded-xl shadow-ghost p-5 border-l-4 mb-4"
-            style={{ borderLeftColor: activeCampaign.color }}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-white shrink-0"
-                style={{ backgroundColor: activeCampaign.color }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 18 }}
-                >
-                  {activeCampaign.type === "Accessibility"
-                    ? "accessibility_new"
-                    : "devices"}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-base font-semibold text-on-surface">
-                  {activeCampaign.title}
-                </h2>
-                <p className="text-xs text-on-surface-variant">
-                  {activeCampaign.type} / {activeCampaign.date}
-                </p>
-              </div>
-            </div>
-
-            <p className="text-sm text-on-surface-variant leading-relaxed mb-3">
-              {activeCampaign.summary}
-            </p>
-
-            <div className="flex flex-wrap gap-5 mb-3">
-              {[
-                { icon: "domain", val: campaignAccounts.filter((a) => a.priority !== "SKIP").length, label: "accounts" },
-                { icon: "people", val: activeCampaign.contacts, label: "contacts" },
-                { icon: "route", val: activeCampaign.cadences, label: "cadences" },
-                { icon: "touch_app", val: activeCampaign.touches, label: "touches" },
-              ].map((s) => (
-                <div key={s.label} className="flex items-center gap-1.5">
-                  <span
-                    className="material-symbols-outlined text-primary"
-                    style={{ fontSize: 15 }}
-                  >
-                    {s.icon}
-                  </span>
-                  <span className="text-sm font-medium text-on-surface">
-                    {s.val}
-                  </span>
-                  <span className="text-xs text-on-surface-variant">
-                    {s.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-          </div>
-
-          {/* Account tiles */}
-          <div className="space-y-3">
-            {campaignAccounts.map((account) => (
-              <AccountPanel
-                key={account.id}
-                account={account}
-                isOpen={!!openAccountIds[account.id]}
-                onToggle={() => toggleAccount(account.id)}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Pipeline Totals */}
-      <div className="bg-surface-container-lowest rounded-xl p-5 shadow-ghost">
-        <h2 className="text-sm font-semibold text-on-surface mb-3 flex items-center gap-2">
-          <span
-            className="material-symbols-outlined text-primary"
-            style={{ fontSize: 18 }}
-          >
-            summarize
-          </span>
-          Pipeline Totals
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <div className="text-2xl font-bold text-on-surface">6</div>
-            <div className="text-xs text-on-surface-variant">Campaigns</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-on-surface">23</div>
-            <div className="text-xs text-on-surface-variant">
-              Accounts (1 DQ)
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-on-surface">90+</div>
-            <div className="text-xs text-on-surface-variant">Contacts</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-on-surface">635+</div>
-            <div className="text-xs text-on-surface-variant">
-              Total Touches
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-3 mt-3 pt-3 border-t border-outline-variant/15">
-          <span className="text-xs text-on-surface-variant flex items-center gap-1.5">
-            <span
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: "#2db87e" }}
-            />
-            5 MFT campaigns
-          </span>
-          <span className="text-xs text-on-surface-variant flex items-center gap-1.5">
-            <span
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: "#00579f" }}
-            />
-            1 Accessibility campaign
-          </span>
-        </div>
       </div>
     </div>
   );
