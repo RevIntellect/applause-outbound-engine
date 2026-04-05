@@ -470,12 +470,10 @@ function AccountPanel({
   account,
   isOpen,
   onToggle,
-  campaignTags,
 }: {
   account: AccountDetail;
   isOpen: boolean;
   onToggle: () => void;
-  campaignTags?: { id: string; title: string; color: string; type: string }[];
 }) {
   const [selectedContactIdx, setSelectedContactIdx] = useState(0);
   const [expandedStages, setExpandedStages] = useState<Record<string, boolean>>(
@@ -518,22 +516,11 @@ function AccountPanel({
             </span>
             <PriorityBadge priority={account.priority} />
           </div>
-          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-            <span className="text-[0.6875rem] text-on-surface-variant">
-              {account.rep && account.rep !== "TBD" ? account.rep + " · " : ""}
-              {account.contacts.length} contacts
-              {totalTouches > 0 ? ` · ${totalTouches} touches` : ""}
-            </span>
-            {campaignTags && campaignTags.length > 0 && campaignTags.map((ct) => (
-              <span
-                key={ct.id}
-                className="text-[0.5625rem] font-medium px-1.5 py-0.5 rounded"
-                style={{ backgroundColor: `${ct.color}15`, color: ct.color }}
-              >
-                {ct.type}
-              </span>
-            ))}
-          </div>
+          <p className="text-[0.6875rem] text-on-surface-variant truncate mt-0.5">
+            {account.rep && account.rep !== "TBD" ? account.rep + " · " : ""}
+            {account.contacts.length} contacts
+            {totalTouches > 0 ? ` · ${totalTouches} touches` : ""}
+          </p>
         </div>
         <div className="text-right shrink-0">
           <div
@@ -762,7 +749,6 @@ function getCampaignsForAccount(accountId: string) {
 /* ── Filter types ── */
 
 type FilterMode = "all" | "high" | "med-high" | "has-cadences";
-type SortMode = "priority" | "score" | "company";
 
 const priorityOrder: Record<string, number> = {
   HIGH: 0,
@@ -771,6 +757,33 @@ const priorityOrder: Record<string, number> = {
   SKIP: 3,
 };
 
+/* ── Date grouping helpers ── */
+
+function getCampaignsByDate() {
+  const nonConsolidated = campaigns.filter((c) => c.id !== "consolidated");
+  const dateMap = new Map<string, typeof nonConsolidated>();
+  for (const c of nonConsolidated) {
+    const date = c.date;
+    if (!dateMap.has(date)) dateMap.set(date, []);
+    dateMap.get(date)!.push(c);
+  }
+  return Array.from(dateMap.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+}
+
+function formatDate(dateStr: string) {
+  try {
+    const d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 /* ── Page ── */
 
 export default function OutputsPage() {
@@ -778,38 +791,10 @@ export default function OutputsPage() {
     {}
   );
   const [filter, setFilter] = useState<FilterMode>("all");
-  const [sort, setSort] = useState<SortMode>("company");
   const [searchQuery, setSearchQuery] = useState("");
 
   const toggleAccount = (id: string) =>
     setOpenAccountIds((prev) => ({ ...prev, [id]: !prev[id] }));
-
-  /* Filter accounts */
-  const filteredAccounts = accounts
-    .filter((a) => {
-      if (filter === "high") return a.priority === "HIGH";
-      if (filter === "med-high")
-        return a.priority === "HIGH" || a.priority === "MED-HIGH";
-      if (filter === "has-cadences")
-        return a.contacts.some((c) => c.touches.length > 0);
-      return true;
-    })
-    .filter((a) => {
-      if (!searchQuery) return true;
-      const q = searchQuery.toLowerCase();
-      return (
-        a.company.toLowerCase().includes(q) ||
-        a.rep.toLowerCase().includes(q) ||
-        a.contacts.some((c) => c.name.toLowerCase().includes(q))
-      );
-    })
-    .sort((a, b) => {
-      if (sort === "priority")
-        return (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9);
-      if (sort === "score")
-        return parseInt(b.fitScore) - parseInt(a.fitScore);
-      return a.company.localeCompare(b.company);
-    });
 
   /* Derived stats */
   const totalContacts = accounts.reduce((s, a) => s + a.contacts.length, 0);
@@ -822,9 +807,27 @@ export default function OutputsPage() {
     a.contacts.some((c) => c.touches.length > 0)
   ).length;
 
+  /* Filter logic */
+  const passesFilter = (a: AccountDetail) => {
+    if (filter === "high" && a.priority !== "HIGH") return false;
+    if (filter === "med-high" && a.priority !== "HIGH" && a.priority !== "MED-HIGH") return false;
+    if (filter === "has-cadences" && !a.contacts.some((c) => c.touches.length > 0)) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      if (
+        !a.company.toLowerCase().includes(q) &&
+        !a.rep.toLowerCase().includes(q) &&
+        !a.contacts.some((c) => c.name.toLowerCase().includes(q))
+      ) return false;
+    }
+    return true;
+  };
+
+  const dateGroups = getCampaignsByDate();
+
   /* Filter pills config */
   const filters: { key: FilterMode; label: string; count: number }[] = [
-    { key: "all", label: "All Accounts", count: accounts.length },
+    { key: "all", label: "All", count: accounts.length },
     { key: "high", label: "HIGH", count: highCount },
     { key: "med-high", label: "HIGH + MED", count: accounts.filter((a) => a.priority === "HIGH" || a.priority === "MED-HIGH").length },
     { key: "has-cadences", label: "With Cadences", count: withCadences },
@@ -833,16 +836,14 @@ export default function OutputsPage() {
   return (
     <div className="max-w-[960px] mx-auto pb-12 space-y-6">
       {/* Header */}
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="font-sans text-[2rem] font-bold tracking-[-0.02em] text-on-surface">
-            Pipeline Outputs
-          </h1>
-          <p className="text-on-surface-variant text-sm mt-1 leading-relaxed">
-            {accounts.length} accounts, {totalContacts} contacts, {totalTouches}+ touches.
-            Click any account to view leads, cadences, and full pipeline output.
-          </p>
-        </div>
+      <div>
+        <h1 className="font-sans text-[2rem] font-bold tracking-[-0.02em] text-on-surface">
+          Pipeline Outputs
+        </h1>
+        <p className="text-on-surface-variant text-sm mt-1 leading-relaxed">
+          {accounts.length} accounts across {campaigns.length - 1} campaign runs.
+          Organized by run date. Click any account to expand.
+        </p>
       </div>
 
       {/* Stats bar */}
@@ -851,8 +852,8 @@ export default function OutputsPage() {
           { icon: "domain", val: accounts.length, label: "Accounts", sub: `${accounts.filter((a) => a.priority === "SKIP").length} DQ` },
           { icon: "people", val: totalContacts, label: "Contacts" },
           { icon: "touch_app", val: `${totalTouches}+`, label: "Touches" },
-          { icon: "campaign", val: campaigns.length - 1, label: "Campaigns" },
-          { icon: "trending_up", val: highCount, label: "HIGH Priority" },
+          { icon: "campaign", val: campaigns.length - 1, label: "Runs" },
+          { icon: "trending_up", val: highCount, label: "HIGH" },
         ].map((s) => (
           <div key={s.label} className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary" style={{ fontSize: 18 }}>{s.icon}</span>
@@ -865,9 +866,8 @@ export default function OutputsPage() {
         ))}
       </div>
 
-      {/* Filter + Sort + Search */}
+      {/* Filter + Search */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Filter pills */}
         <div className="flex gap-1">
           {filters.map((f) => (
             <button
@@ -884,27 +884,7 @@ export default function OutputsPage() {
             </button>
           ))}
         </div>
-
-        {/* Sort */}
-        <div className="flex items-center gap-1 ml-auto">
-          <span className="text-[0.625rem] text-on-surface-variant uppercase tracking-wide">Sort:</span>
-          {(["priority", "score", "company"] as SortMode[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSort(s)}
-              className={`px-2 py-1 rounded text-[0.625rem] font-medium transition-colors ${
-                sort === s
-                  ? "bg-surface-container-high text-on-surface"
-                  : "text-on-surface-variant hover:bg-surface-container"
-              }`}
-            >
-              {s === "priority" ? "Priority" : s === "score" ? "Fit Score" : "A-Z"}
-            </button>
-          ))}
-        </div>
-
-        {/* Search */}
-        <div className="relative">
+        <div className="relative ml-auto">
           <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant" style={{ fontSize: 16 }}>search</span>
           <input
             type="text"
@@ -916,26 +896,69 @@ export default function OutputsPage() {
         </div>
       </div>
 
-      {/* Account list */}
-      <div className="space-y-3">
-        {filteredAccounts.length === 0 && (
-          <div className="text-center py-12 text-on-surface-variant text-sm">
-            No accounts match the current filter.
+      {/* Date-grouped campaign rows */}
+      {dateGroups.map(([date, dateCampaigns]) => {
+        /* Gather all visible accounts across campaigns for this date */
+        const dateAccountIds = new Set<string>();
+        dateCampaigns.forEach((c) => c.accountIds.forEach((id) => dateAccountIds.add(id)));
+
+        return (
+          <div key={date} className="space-y-4">
+            {/* Date header */}
+            <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontSize: 20 }}>calendar_today</span>
+                <h2 className="text-lg font-bold text-on-surface">{formatDate(date)}</h2>
+              </div>
+              <span className="text-[0.6875rem] text-on-surface-variant">
+                {dateCampaigns.length} {dateCampaigns.length === 1 ? "run" : "runs"}
+              </span>
+              <div className="flex-1 h-px bg-outline-variant/20" />
+            </div>
+
+            {/* Campaign rows within this date */}
+            {dateCampaigns.map((campaign) => {
+              const campAccounts = campaign.accountIds
+                .map((id) => accounts.find((a) => a.id === id))
+                .filter((a): a is AccountDetail => !!a && passesFilter(a))
+                .sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+
+              if (campAccounts.length === 0) return null;
+
+              return (
+                <div key={campaign.id} className="space-y-2">
+                  {/* Campaign row header */}
+                  <div className="flex items-center gap-2 px-1">
+                    <div
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: campaign.color }}
+                    />
+                    <span className="text-sm font-semibold text-on-surface">
+                      {campaign.title}
+                    </span>
+                    <TypeBadge type={campaign.type} />
+                    <span className="text-[0.625rem] text-on-surface-variant">
+                      {campAccounts.length} accounts / {campaign.contacts} contacts / {campaign.touches} touches
+                    </span>
+                  </div>
+
+                  {/* Account tiles */}
+                  <div className="space-y-2">
+                    {campAccounts.map((account) => (
+                      <AccountPanel
+                        key={`${campaign.id}-${account.id}`}
+                        account={account}
+                        isOpen={!!openAccountIds[account.id]}
+                        onToggle={() => toggleAccount(account.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
-        {filteredAccounts.map((account) => {
-          const accountCampaigns = getCampaignsForAccount(account.id);
-          return (
-            <AccountPanel
-              key={account.id}
-              account={account}
-              isOpen={!!openAccountIds[account.id]}
-              onToggle={() => toggleAccount(account.id)}
-              campaignTags={accountCampaigns}
-            />
-          );
-        })}
-      </div>
+        );
+      })}
     </div>
   );
 }
