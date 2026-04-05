@@ -778,7 +778,7 @@ export default function OutputsPage() {
     {}
   );
   const [filter, setFilter] = useState<FilterMode>("all");
-  const [sort, setSort] = useState<SortMode>("priority");
+  const [sort, setSort] = useState<SortMode>("company");
   const [searchQuery, setSearchQuery] = useState("");
 
   const toggleAccount = (id: string) =>
